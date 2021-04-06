@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60e2f37e266fb48daa08689425a83374",
+    "content-hash": "bd6470975e80b2bfbe60bd4fd4585fe1",
     "packages": [
         {
             "name": "amazeeio/drupal_integrations",
@@ -7258,52 +7258,6 @@
             "time": "2020-09-03T19:59:53+00:00"
         },
         {
-            "name": "drupal/core-dev",
-            "version": "9.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/drupal/core-dev.git",
-                "reference": "559e6611014b0815c61b8004598854617d541d97"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/drupal/core-dev/zipball/559e6611014b0815c61b8004598854617d541d97",
-                "reference": "559e6611014b0815c61b8004598854617d541d97",
-                "shasum": ""
-            },
-            "require": {
-                "behat/mink": "^1.8",
-                "behat/mink-goutte-driver": "^1.2",
-                "behat/mink-selenium2-driver": "^1.4",
-                "composer/composer": "^2.0.2",
-                "drupal/coder": "^8.3.7",
-                "easyrdf/easyrdf": "^0.9 || ^1.0",
-                "justinrainbow/json-schema": "^5.2",
-                "mikey179/vfsstream": "^1.6.8",
-                "phpspec/prophecy": "^1.7",
-                "phpunit/phpunit": "^8.4.1 || ^9",
-                "symfony/browser-kit": "^4.4",
-                "symfony/css-selector": "^4.4",
-                "symfony/dom-crawler": "^4.4 !=4.4.5",
-                "symfony/error-handler": "^4.4",
-                "symfony/filesystem": "^4.4",
-                "symfony/finder": "^4.4",
-                "symfony/lock": "^4.4",
-                "symfony/phpunit-bridge": "^5.1.4",
-                "symfony/var-dumper": "^5.1.2"
-            },
-            "conflict": {
-                "webflo/drupal-core-require-dev": "*"
-            },
-            "type": "metapackage",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "description": "require-dev dependencies from drupal/drupal; use in addition to drupal/core-recommended to run tests from drupal/core.",
-            "time": "2020-10-28T08:13:15+00:00"
-        },
-        {
             "name": "drupal/core-dev-pinned",
             "version": "9.1.5",
             "source": {
@@ -9825,5 +9779,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }
