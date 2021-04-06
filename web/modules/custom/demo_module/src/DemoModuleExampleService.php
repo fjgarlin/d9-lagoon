@@ -26,12 +26,6 @@ class DemoModuleExampleService {
     $this->nodeStorage = $entity_type_manager->getStorage('node');
   }
 
-  /**
-   * Retrieves the last created node.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface|false
-   *   A node entity or FALSE if none was found.
-   */
   public function getLastNode() {
     $nids = $this->nodeStorage->getQuery()
       ->sort('created', 'DESC')
