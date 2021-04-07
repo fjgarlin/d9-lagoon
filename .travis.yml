@@ -15,6 +15,7 @@ php:
 env:
   global:
     - DRUPAL_BASE_URL="http://127.0.0.1:8080"
+    - XDEBUG_MODE=coverage
   matrix:
     - JOB=job:check-coding-standards
     - JOB=job:run-unit-tests
