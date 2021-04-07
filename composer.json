@@ -26,6 +26,7 @@
         "zaporylie/composer-drupal-optimizations": "1.2.0"
     },
     "require-dev": {
+        "dmore/chrome-mink-driver": "^2.7",
         "drupal/core-dev": "^9.1",
         "drupal/core-dev-pinned": "9.1.5",
         "weitzman/drupal-test-traits": "^1.5"
