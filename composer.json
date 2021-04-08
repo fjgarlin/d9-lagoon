@@ -19,7 +19,6 @@
         "amazeeio/drupal_integrations": "0.3.4",
         "composer/installers": "1.10.0",
         "cweagans/composer-patches": "1.7.0",
-        "drupal/admin_toolbar": "^3.0",
         "drupal/core-project-message": "9.1.5",
         "drupal/core-recommended": "9.1.5",
         "drupal/lagoon_logs": "1.1.0",
