@@ -16,7 +16,7 @@ env:
   global:
     - DRUPAL_BASE_URL="http://127.0.0.1:8080"
     - XDEBUG_MODE=coverage
-    - DB_DUMP_URL="https://doc-0k-9s-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/s5492ucsck2eo68l6b06o35ogls3dp1a/1617869325000/11410537201823817928/*/1P90R4ldTDUWmsPp-RkjMeg-MQfEcnpFq?e=download"
+    - DB_DUMP_URL="https://raw.githubusercontent.com/fjgarlin/d9-lagoon/testing-ci/assets/d9-lagoon-dump.sql"
   matrix:
     - JOB=job:check-coding-standards
     - JOB=job:run-unit-tests

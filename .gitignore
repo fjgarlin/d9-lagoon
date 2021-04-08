@@ -15,5 +15,5 @@
 /.idea/
 
 # DB dumps
-*.sql
-*.sql.gz
+/*.sql
+/*.sql.gz
