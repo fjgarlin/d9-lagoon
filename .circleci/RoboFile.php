@@ -1,6 +1,7 @@
 <?php
 
 // @codingStandardsIgnoreStart
+
 /**
  * Base tasks for setting up a module to test within a full Drupal environment.
  *
