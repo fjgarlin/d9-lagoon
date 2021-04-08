@@ -7519,7 +7519,7 @@
         },
         {
             "name": "drupal/core-dev",
-            "version": "9.1.5",
+            "version": "9.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core-dev.git",
@@ -10289,5 +10289,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "1.1.0"
 }
