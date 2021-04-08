@@ -75,7 +75,7 @@ code_sniffer: &code_sniffer
   steps:
     - checkout
     - *copy_robo
-    - restore_cache: *restore_cache
+    # - restore_cache: *restore_cache
     - run:
         name: Inspect coding standards
         command: robo job:check-coding-standards
@@ -116,7 +116,7 @@ workflows:
   version: 2
   test_and_lint:
     jobs:
-      - run-unit-kernel-tests
-      - run-behat-tests
+      # - run-unit-kernel-tests
+      # - run-behat-tests
       - run-code-sniffer
-      - run-code-coverage
+      # - run-code-coverage
