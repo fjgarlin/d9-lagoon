@@ -108,4 +108,3 @@ section of composer.json:
     }
 }
 ```
-
