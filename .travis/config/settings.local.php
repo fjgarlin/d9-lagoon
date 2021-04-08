@@ -10,3 +10,7 @@ $databases['default']['default'] = array (
   'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
   'driver' => 'mysql',
 );
+
+if (empty($settings['hash_salt'])) {
+  $settings['hash_salt'] = 'drupal-ci';
+}
