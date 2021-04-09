@@ -10,11 +10,6 @@
  */
 class RoboFile extends \Robo\Tasks {
   /**
-   * The database URL.
-   */
-  const DB_URL = 'sqlite://tmp/site.sqlite';
-
-  /**
    * Command to build the environment
    *
    * @return \Robo\Result
@@ -231,8 +226,7 @@ class RoboFile extends \Robo\Tasks {
       $task = $this->drush()
           ->args('site-install')
           ->option('verbose')
-          ->option('yes')
-          ->option('db-url', static::DB_URL, '=');
+          ->option('yes');
       return $task;
   }
 
