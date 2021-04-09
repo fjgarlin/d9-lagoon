@@ -4,11 +4,11 @@ jobs:
   phpunit:
     runs-on: ubuntu-latest
     container:
-      image: juampynr/drupal8ci:latest
+      image: drupal:latest
 
     services:
       mariadb:
-        image: quay.io/juampynr/drupal8-github-actions:latest
+        image: mariadb:latest
         ports:
           - 33306:3306
 
@@ -27,7 +27,7 @@ jobs:
   code-standards:
     runs-on: ubuntu-latest
     container:
-      image: juampynr/drupal8ci:latest
+      image: drupal:latest
 
     steps:
       - uses: actions/checkout@v1
@@ -44,11 +44,11 @@ jobs:
   code-coverage:
     runs-on: ubuntu-latest
     container:
-      image: juampynr/drupal8ci:latest
+      image: drupal:latest
 
     services:
       mariadb:
-        image: quay.io/juampynr/drupal8-github-actions:latest
+        image: mariadb:latest
         ports:
           - 33306:3306
 
@@ -74,11 +74,11 @@ jobs:
   existing-site-tests:
     runs-on: ubuntu-latest
     container:
-      image: juampynr/drupal8ci:latest
+      image: drupal:latest
 
     services:
       mariadb:
-        image: quay.io/juampynr/drupal8-github-actions:latest
+        image: mariadb:latest
         ports:
           - 33306:3306
 
