@@ -19,6 +19,7 @@ jobs:
 
       - name: Build project
         run: |
+          composer --verbose install
           vendor/bin/robo job:build
 
       - name: Run PHPUnit tests
@@ -36,6 +37,7 @@ jobs:
 
       - name: Build project
         run: |
+          composer --verbose install
           vendor/bin/robo job:build
 
       - name: Check coding standards
@@ -59,6 +61,7 @@ jobs:
 
       - name: Build project
         run: |
+          composer --verbose install
           vendor/bin/robo job:build
 
       - name: Assess code coverage
@@ -89,6 +92,7 @@ jobs:
 
       - name: Build project
         run: |
+          composer --verbose install
           vendor/bin/robo job:build
 
       - name: Run existing site tests
