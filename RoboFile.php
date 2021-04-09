@@ -61,20 +61,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Command to run existing site tests.
-   *
-   * @return \Robo\Result
-   *   The result tof the collection of tasks.
-   */
-  public function jobExistingSiteTests() {
-    $collection = $this->collectionBuilder();
-    $collection->addTask($this->installDrupal());
-    $collection->addTaskList($this->runUpdateDatabase());
-    $collection->addTaskList($this->runExistingSiteTests());
-    return $collection->run();
-  }
-
-  /**
    * Command to run Chrome headless.
    *
    * @return \Robo\Result
@@ -151,24 +137,6 @@ class RoboFile extends \Robo\Tasks {
     $tasks[] = $this->taskExecStack()
       ->exec('vendor/bin/phpcs --standard=Drupal --report=junit --report-junit=artifacts/phpcs/phpcs.xml web/modules/custom')
       ->exec('vendor/bin/phpcs --standard=DrupalPractice --report=junit --report-junit=artifacts/phpcs/phpcs.xml web/modules/custom');
-    return $tasks;
-  }
-
-  /**
-   * Runs existing site tests.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function runExistingSiteTests() {
-    $tasks = [];
-    $tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html/web!' . getenv('GITHUB_WORKSPACE') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
-    $tasks[] = $this->taskExec('service apache2 start');
-    $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
-    $tasks[] = $this->taskExecStack()
-      ->dir('web')
-      ->exec('../vendor/bin/phpunit -c core --debug --verbose modules/custom');
     return $tasks;
   }
 
