@@ -9,6 +9,7 @@
  * @codeCoverageIgnore
  */
 class RoboFile extends \Robo\Tasks {
+
   /**
    * Command to build the environment
    *
