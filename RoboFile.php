@@ -110,8 +110,11 @@ class RoboFile extends \Robo\Tasks {
    */
   protected function runUnitTests() {
     $tasks = [];
+    $tasks[] = $this->taskFilesystemStack()
+      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
-      ->exec('vendor/bin/phpunit --debug --verbose --testsuite=unit,kernel --log-junit=junit.xml');
+      ->dir('web')
+      ->exec('../vendor/bin/phpunit -c core --debug --coverage-clover ../build/logs/clover.xml --verbose modules/custom');
     return $tasks;
   }
 
@@ -123,8 +126,11 @@ class RoboFile extends \Robo\Tasks {
    */
   protected function runCoverageReport() {
     $tasks = [];
+    $tasks[] = $this->taskFilesystemStack()
+      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
-      ->exec('vendor/bin/phpunit --debug --verbose --coverage-html ../coverage --testsuite=unit,kernel');
+      ->dir('web')
+      ->exec('../vendor/bin/phpunit -c core --debug --verbose --coverage-html ../coverage modules/custom');
     return $tasks;
   }
 
@@ -156,7 +162,11 @@ class RoboFile extends \Robo\Tasks {
     $tasks = [];
     $tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html/web!' . getenv('GITHUB_WORKSPACE') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
     $tasks[] = $this->taskExec('service apache2 start');
-    $tasks[] = $this->taskExec('vendor/bin/phpunit --debug --verbose web/modules/custom');
+    $tasks[] = $this->taskFilesystemStack()
+      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
+    $tasks[] = $this->taskExecStack()
+      ->dir('web')
+      ->exec('../vendor/bin/phpunit -c core --debug --verbose modules/custom');
     return $tasks;
   }
 
