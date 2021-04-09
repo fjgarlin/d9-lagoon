@@ -9,6 +9,10 @@
  * @codeCoverageIgnore
  */
 class RoboFile extends \Robo\Tasks {
+  /**
+   * The database URL.
+   */
+  const DB_URL = 'sqlite://tmp/site.sqlite';
 
   /**
    * Command to build the environment
