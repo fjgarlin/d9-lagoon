@@ -31,6 +31,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function jobUnitTests() {
     $collection = $this->collectionBuilder();
+    $collection->addTask($this->installDrupal());
     $collection->addTaskList($this->runUnitTests());
     return $collection->run();
   }
@@ -43,6 +44,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function jobCoverageReport() {
     $collection = $this->collectionBuilder();
+    $collection->addTask($this->installDrupal());
     $collection->addTaskList($this->runCoverageReport());
     return $collection->run();
   }
@@ -67,6 +69,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function jobExistingSiteTests() {
     $collection = $this->collectionBuilder();
+    $collection->addTask($this->installDrupal());
     $collection->addTaskList($this->runUpdateDatabase());
     $collection->addTaskList($this->runExistingSiteTests());
     return $collection->run();
@@ -211,6 +214,22 @@ class RoboFile extends \Robo\Tasks {
       ->envVars(['COMPOSER_ALLOW_SUPERUSER' => 1, 'COMPOSER_DISCARD_CHANGES' => 1] + getenv())
       ->optimizeAutoloader();
     return $tasks;
+  }
+
+  /**
+   * Install Drupal.
+   *
+   * @return \Robo\Task\Base\Exec
+   *   A task to install Drupal.
+   */
+  protected function installDrupal()
+  {
+      $task = $this->drush()
+          ->args('site-install')
+          ->option('verbose')
+          ->option('yes')
+          ->option('db-url', static::DB_URL, '=');
+      return $task;
   }
 
 }
