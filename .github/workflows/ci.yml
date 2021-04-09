@@ -4,7 +4,7 @@ jobs:
   phpunit:
     runs-on: ubuntu-latest
     container:
-      image: drupal:php7.4-fpm
+      image: juampynr/drupal8ci:latest
 
     services:
       mariadb:
@@ -28,7 +28,7 @@ jobs:
   code-standards:
     runs-on: ubuntu-latest
     container:
-      image: drupal:php7.4-fpm
+      image: juampynr/drupal8ci:latest
 
     steps:
       - uses: actions/checkout@v1
@@ -46,7 +46,7 @@ jobs:
   code-coverage:
     runs-on: ubuntu-latest
     container:
-      image: drupal:php7.4-fpm
+      image: juampynr/drupal8ci:latest
 
     services:
       mariadb:
@@ -77,7 +77,7 @@ jobs:
   existing-site-tests:
     runs-on: ubuntu-latest
     container:
-      image: drupal:php7.4-fpm
+      image: juampynr/drupal8ci:latest
 
     services:
       mariadb:
