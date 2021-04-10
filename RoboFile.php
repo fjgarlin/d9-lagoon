@@ -62,16 +62,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Command to run Chrome headless.
-   *
-   * @return \Robo\Result
-   *   The result tof the task
-   */
-  public function runChromeHeadless() {
-    return $this->taskExec('google-chrome-unstable --disable-gpu --headless --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222')->run();
-  }
-
-  /**
    * Updates the database.
    *
    * @return \Robo\Task\Base\Exec[]
@@ -100,7 +90,7 @@ class RoboFile extends \Robo\Tasks {
   protected function runUnitTests() {
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
+      ->copy('.gitlab-ci/config/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
       ->dir('web')
       ->exec('../vendor/bin/phpunit -c core --debug --coverage-clover ../build/logs/clover.xml --verbose modules/custom');
@@ -115,8 +105,11 @@ class RoboFile extends \Robo\Tasks {
    */
   protected function runCoverageReport() {
     $tasks = [];
+    // $tasks[] = $this->taskFilesystemStack()
+    //   ->mkdir('artifacts/coverage-xml', 777)
+    //   ->mkdir('artifacts/coverage-html', 777);
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
+      ->copy('.gitlab-ci/config/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
       ->dir('web')
       ->exec('../vendor/bin/phpunit -c core --debug --verbose --coverage-html ../coverage modules/custom');
@@ -161,9 +154,9 @@ class RoboFile extends \Robo\Tasks {
     $force = TRUE;
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/settings.local.php',
+      ->copy('.gitlab-ci/settings.local.php',
         'web/sites/default/settings.local.php', $force)
-      ->copy('.github/config/.env',
+      ->copy('.gitlab-ci/.env',
         '.env', $force);
     return $tasks;
   }
