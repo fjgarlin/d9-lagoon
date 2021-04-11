@@ -156,17 +156,16 @@ class RoboFile extends \Robo\Tasks {
    */
   protected function runBehatTests()
   {
+    $this->taskServer(80)
+      ->dir('web')
+      ->arg('.ht.router.php')
+      ->background()
+      ->run();
+
     $force = true;
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
       ->copy('.github/config/behat.yml', 'tests/behat.yml', $force);
-    //$tasks[] = $this->taskExec('vendor/bin/drush --root=' . $this->getDocroot() . '/web runserver localhost:80 &');
-    $tasks[] = $this->taskServer(80)
-      ->dir('web')
-      ->rawArg('.ht.router.php')
-      ->background()
-      ->run();
-    $tasks[] = $this->taskExec('sleep 10s');
     //$tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html!' . getenv('GITHUB_WORKSPACE') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
     //$tasks[] = $this->taskExec('service apache2 start');
     $tasks[] = $this->taskExec('vendor/bin/behat --verbose -c tests/behat.yml');
