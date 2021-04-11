@@ -189,9 +189,10 @@ class RoboFile extends \Robo\Tasks {
   protected function runBehatTests()
   {
     $force = true;
-    $tasks = [];
+    $tasks = [];    
     $tasks[] = $this->taskFilesystemStack()
       ->copy('.github/config/behat.yml', 'tests/behat.yml', $force);
+    $tasks[] = $this->taskExec('sleep 30s');
     $tasks[] = $this->taskExec('vendor/bin/behat --verbose -c tests/behat.yml');
     return $tasks;
   }
