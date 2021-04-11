@@ -24,7 +24,7 @@ default:
       drush:
         alias: 'local'
       drupal:
-        drupal_root: '/__w/d9-lagoon/d9-lagoon'
+        drupal_root: '/__w/d9-lagoon/d9-lagoon/web'
       region_map:
         footer: "#footer"
       selectors:
