@@ -149,20 +149,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Starts PHP built in server
-   */
-  public function startServer()
-  {
-    // return $this->taskServer(80)
-    //   ->dir('web')
-    //   ->arg('.ht.router.php')
-    //   ->background()
-    //   ->run();
-    $this->taskExec('service apache2 stop')->run();
-    return $this->taskExec('php -S 127.0.0.1:80 -t web .ht.router.php')->run();
-  }
-
-  /**
    * Runs Behat tests.
    *
    * @return \Robo\Task\Base\Exec[]
@@ -174,8 +160,8 @@ class RoboFile extends \Robo\Tasks {
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
       ->copy('.github/config/behat.yml', 'tests/behat.yml', $force);
-    //$tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html!' . getenv('GITHUB_WORKSPACE') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
-    //$tasks[] = $this->taskExec('service apache2 start');
+    $tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html!' . getenv('GITHUB_WORKSPACE') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
+    $tasks[] = $this->taskExec('service apache2 start');
     $tasks[] = $this->taskExec('vendor/bin/behat --verbose -c tests/behat.yml');
     return $tasks;
   }
@@ -221,16 +207,6 @@ class RoboFile extends \Robo\Tasks {
       ->envVars(['COMPOSER_ALLOW_SUPERUSER' => 1, 'COMPOSER_DISCARD_CHANGES' => 1] + getenv())
       ->optimizeAutoloader();
     return $tasks;
-  }
-
-  /**
-   * Command to run Chrome headless.
-   *
-   * @return \Robo\Result
-   *   The result tof the task
-   */
-  public function runChromeHeadless() {
-    return $this->taskExec('google-chrome-unstable --disable-gpu --headless --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222')->run();
   }
 
   /**
