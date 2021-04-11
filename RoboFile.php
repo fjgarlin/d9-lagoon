@@ -158,6 +158,7 @@ class RoboFile extends \Robo\Tasks {
     //   ->arg('.ht.router.php')
     //   ->background()
     //   ->run();
+    $this->taskExec('service apache2 stop')->run();
     return $this->taskExec('php -S 127.0.0.1:80 -t web .ht.router.php')->run();
   }
 
