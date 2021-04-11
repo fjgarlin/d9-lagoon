@@ -94,6 +94,7 @@ class RoboFile extends \Robo\Tasks {
       ->option('yes')
       ->option('verbose');
     $tasks[] = $this->drush()->args('cache:rebuild')->option('verbose');
+    $tasks[] = $this->drush()->args('st');
     return $tasks;
   }
 
