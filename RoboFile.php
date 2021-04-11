@@ -149,6 +149,18 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
+   * Starts PHP built in server
+   */
+  public function startServer()
+  {
+    $this->taskServer(80)
+      ->dir('web')
+      ->arg('.ht.router.php')
+      ->background()
+      ->run();
+  }
+
+  /**
    * Runs Behat tests.
    *
    * @return \Robo\Task\Base\Exec[]
@@ -156,12 +168,6 @@ class RoboFile extends \Robo\Tasks {
    */
   protected function runBehatTests()
   {
-    $this->taskServer(80)
-      ->dir('web')
-      ->arg('.ht.router.php')
-      ->background()
-      ->run();
-
     $force = true;
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
