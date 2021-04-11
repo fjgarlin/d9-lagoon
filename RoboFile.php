@@ -160,10 +160,12 @@ class RoboFile extends \Robo\Tasks {
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
       ->copy('.github/config/behat.yml', 'tests/behat.yml', $force);
-    $tasks[] = $this->taskExec('chown -R www-data:www-data ' . getenv('GITHUB_WORKSPACE'));
-    $tasks[] = $this->taskExec('chmod -R 755 ' . getenv('GITHUB_WORKSPACE'));
-    $tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html!' . getenv('GITHUB_WORKSPACE') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
-    $tasks[] = $this->taskExec('service apache2 restart');
+    // $tasks[] = $this->taskExec('chown -R www-data:www-data ' . getenv('GITHUB_WORKSPACE'));
+    // $tasks[] = $this->taskExec('chmod -R 755 ' . getenv('GITHUB_WORKSPACE'));
+    // $tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html!' . getenv('GITHUB_WORKSPACE') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
+    // $tasks[] = $this->taskExec('service apache2 restart');
+    // $tasks[] = $this->taskExec('curl http://localhost');
+    $tasks[] = $this->taskExec('vendor/bin/drush serve 80');
     $tasks[] = $this->taskExec('curl http://localhost');
     $tasks[] = $this->taskExec('vendor/bin/behat --verbose -c tests/behat.yml');
     return $tasks;
