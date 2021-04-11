@@ -18,6 +18,9 @@ default:
           selenium2:
             browser: chrome
             wd_host: http://localhost:4444/wd/hub
+            capabilities:
+              version: ''
+
     Drupal\DrupalExtension:
       blackbox: ~
       api_driver: 'drupal'

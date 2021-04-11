@@ -101,7 +101,7 @@ jobs:
         run: |
           robo job:build
 
-      - name: Run PHPUnit tests
+      - name: Run Behat tests
         run: |
           vendor/bin/robo run:chrome-headless &
           vendor/bin/robo job:behat-tests
