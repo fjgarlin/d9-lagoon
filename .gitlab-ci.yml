@@ -1,0 +1,80 @@
+stages:
+  - build
+  - test
+
+# The cache strategy for the build job.
+.cache_strategy_push:
+  cache:
+    paths:
+      - vendor
+      - web/core
+      - web/libraries
+      - web/modules/contrib
+      - web/profiles/contrib
+      - web/themes/contrib
+      - drush/Commands
+
+# The cache strategy for the test jobs.
+.cache_strategy_pull:
+  extends: .cache_strategy_push
+  cache:
+    policy: pull
+
+# The template for Drupal9CI tests.
+.drupal9ci_test_template:
+  extends: .cache_strategy_pull
+  image: juampynr/drupal8ci:latest
+  stage: test
+  services:
+    - name: mariadb:latest
+      alias: db
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: drupal
+  script:
+    - mysql --version
+    - sleep 10
+    - echo "SHOW tables;"| mysql -u root -p"$MYSQL_ROOT_PASSWORD" -h db "${MYSQL_DATABASE}"
+
+
+  dependencies:
+    - drupal9ci:build
+
+## Job to build the environment.
+drupal9ci:build:
+  extends: .cache_strategy_push
+  image: juampynr/drupal8ci:latest
+  stage: build
+  script: robo job:build
+  artifacts:
+    untracked: true
+    paths:
+      - ./*
+
+## Job to check coding standards.
+drupal9ci:code_sniffer:
+  extends: .cache_strategy_pull
+  image: juampynr/drupal8ci:latest
+  script: vendor/bin/robo job:coding-standards
+  artifacts:
+    paths:
+      - artifacts/phpcs/phpcs.xml
+
+## Job to run Unit and Kernel tests.
+drupal9ci:unit_kernel_tests:
+  extends: .drupal9ci_test_template
+  script: vendor/bin/robo job:unit-tests
+  artifacts:
+    paths:
+      - junit.xml
+    reports:
+      junit: junit.xml
+
+## Job to check test coverage.
+drupal9ci:code_coverage:
+  extends: .drupal9ci_test_template
+  script: vendor/bin/robo job:coverage-report
+  artifacts:
+    paths:
+      - artifacts
+  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
