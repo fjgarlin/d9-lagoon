@@ -23,8 +23,8 @@ default:
       api_driver: 'drupal'
       drush:
         alias: 'local'
-      drupal:
-        drupal_root: '/opt/drupal/web'
+      # drupal:
+      #   drupal_root: '/opt/drupal/web'
       region_map:
         footer: "#footer"
       selectors:
