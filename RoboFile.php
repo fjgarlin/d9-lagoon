@@ -179,17 +179,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Get the absolute path to the docroot.
-   *
-   * @return string
-   *   The document root.
-   */
-  protected function getDocroot()
-  {
-      return (getcwd());
-  }
-
-  /**
    * Return drush with default arguments.
    *
    * @return \Robo\Task\Base\Exec
