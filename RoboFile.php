@@ -153,11 +153,12 @@ class RoboFile extends \Robo\Tasks {
    */
   public function startServer()
   {
-    $this->taskServer(80)
+    return $this->taskServer(80)
       ->dir('web')
       ->arg('.ht.router.php')
       ->background()
       ->run();
+    // return $this->taskExec('php -S 127.0.0.1:80 -t web .ht.router.php')->run();
   }
 
   /**
