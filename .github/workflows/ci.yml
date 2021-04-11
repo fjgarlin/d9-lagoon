@@ -94,9 +94,6 @@ jobs:
     env:
       FOO: bar
       DB_DUMP_URL: "https://raw.githubusercontent.com/fjgarlin/d9-lagoon/9.x/assets/d9-lagoon-dump.sql"
-    defaults:
-      run:
-        working-directory: /opt/drupal/web
     steps:
       - uses: actions/checkout@v1
         with:
