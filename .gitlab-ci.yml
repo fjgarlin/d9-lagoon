@@ -79,15 +79,14 @@ drupal9ci:code_coverage:
 
 ## Job to run behat.
 drupal9ci:behat:
-  extends: .cache_strategy_pull
+  extends: .drupal9ci_test_template
   image: juampynr/drupal8ci:latest
   variables:
     FOO: bar
     # DB_DUMP_URL: "URL to your DB dump"
   script:
-    - robo job:serve-drupal &
-    - robo job:behat-tests
+    - vendor/bin/robo job:serve-drupal &
+    - vendor/bin/robo job:behat-tests
   artifacts:
-    untracked: true
     paths:
-      - ./*
+      - artifacts
