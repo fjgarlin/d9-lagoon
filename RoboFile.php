@@ -171,7 +171,7 @@ class RoboFile extends \Robo\Tasks {
     $tasks = [];
     // $tasks[] = $this->taskExec('vendor/bin/drush serve 80 &');
     // CI_BUILDS_DIR
-    $tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html/web!' . getenv('CI_BUILDS_DIR') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
+    $tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html!' . getenv('CI_PROJECT_DIR') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
     $tasks[] = $this->taskExec('service apache2 start');
     return $tasks;
   }
