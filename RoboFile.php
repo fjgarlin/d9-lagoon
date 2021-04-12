@@ -70,10 +70,22 @@ class RoboFile extends \Robo\Tasks {
   public function jobBehatTests()
   {
     $collection = $this->collectionBuilder();
-    $collection->addTaskList($this->runComposer());
+    $collection->addTaskList($this->runBehatTests());
+    return $collection->run();
+  }
+
+  /**
+   * Serve Drupal.
+   *
+   * @return \Robo\Result
+   *   The result tof the collection of tasks.
+   */
+  public function jobServeDrupal()
+  {
+    $collection = $this->collectionBuilder();
     $collection->addTaskList($this->importDatabase());
     $collection->addTaskList($this->runUpdateDatabase());
-    $collection->addTaskList($this->runBehatTests());
+    $collection->addTaskList($this->runServeDrupal());
     return $collection->run();
   }
 
@@ -149,6 +161,26 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
+   * Serves Drupal.
+   *
+   * @return \Robo\Task\Base\Exec[]
+   *   An array of tasks.
+   */
+  function runServeDrupal()
+  {
+    $force = true;
+    $tasks = [];
+    // $tasks[] = $this->taskExec('chown -R www-data:www-data ' . getenv('GITHUB_WORKSPACE'));
+    // $tasks[] = $this->taskExec('chmod -R 755 ' . getenv('GITHUB_WORKSPACE'));
+    // $tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html!' . getenv('GITHUB_WORKSPACE') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
+    // $tasks[] = $this->taskExec('service apache2 restart');
+    // $tasks[] = $this->taskExec('curl http://localhost');
+    $tasks[] = $this->taskExec('vendor/bin/drush serve 80 &');
+    $tasks[] = $this->taskExec('curl http://localhost');
+    return $tasks;
+  }
+
+  /**
    * Runs Behat tests.
    *
    * @return \Robo\Task\Base\Exec[]
@@ -157,9 +189,10 @@ class RoboFile extends \Robo\Tasks {
   protected function runBehatTests()
   {
     $force = true;
-    $tasks = [];
+    $tasks = [];    
     $tasks[] = $this->taskFilesystemStack()
       ->copy('.github/config/behat.yml', 'tests/behat.yml', $force);
+    $tasks[] = $this->taskExec('sleep 30s');
     $tasks[] = $this->taskExec('vendor/bin/behat --verbose -c tests/behat.yml');
     return $tasks;
   }
@@ -208,16 +241,6 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
-   * Command to run Chrome headless.
-   *
-   * @return \Robo\Result
-   *   The result tof the task
-   */
-  public function runChromeHeadless() {
-    return $this->taskExec('google-chrome-unstable --disable-gpu --headless --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222')->run();
-  }
-
-  /**
    * Install Drupal.
    *
    * @return \Robo\Task\Base\Exec
@@ -254,6 +277,5 @@ class RoboFile extends \Robo\Tasks {
     $tasks[] = $this->drush()->rawArg('sql-cli < dump.sql');
     return $tasks;
   }
-
 
 }
