@@ -70,10 +70,22 @@ class RoboFile extends \Robo\Tasks {
   public function jobBehatTests()
   {
     $collection = $this->collectionBuilder();
-    $collection->addTaskList($this->runComposer());
+    $collection->addTaskList($this->runBehatTests());
+    return $collection->run();
+  }
+
+  /**
+   * Serve Drupal.
+   *
+   * @return \Robo\Result
+   *   The result tof the collection of tasks.
+   */
+  public function jobServeDrupal()
+  {
+    $collection = $this->collectionBuilder();
     $collection->addTaskList($this->importDatabase());
     $collection->addTaskList($this->runUpdateDatabase());
-    $collection->addTaskList($this->runBehatTests());
+    $collection->addTaskList($this->runServeDrupal());
     return $collection->run();
   }
 
@@ -107,7 +119,7 @@ class RoboFile extends \Robo\Tasks {
   protected function runUnitTests() {
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.gitlab-ci/config/phpunit.xml', 'web/core/phpunit.xml', $force);
+      ->copy('.gitlab-ci/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
       ->dir('web')
       ->exec('../vendor/bin/phpunit -c core --debug --coverage-clover ../build/logs/clover.xml --verbose modules/custom');
@@ -123,7 +135,7 @@ class RoboFile extends \Robo\Tasks {
   protected function runCoverageReport() {
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.gitlab-ci/config/phpunit.xml', 'web/core/phpunit.xml', $force);
+      ->copy('.gitlab-ci/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
       ->dir('web')
       ->exec('../vendor/bin/phpunit -c core --debug --verbose --coverage-html ../coverage modules/custom');
@@ -149,6 +161,19 @@ class RoboFile extends \Robo\Tasks {
   }
 
   /**
+   * Serves Drupal.
+   *
+   * @return \Robo\Task\Base\Exec[]
+   *   An array of tasks.
+   */
+  function runServeDrupal()
+  {
+    $tasks = [];
+    $tasks[] = $this->taskExec('vendor/bin/drush serve 80 &');
+    return $tasks;
+  }
+
+  /**
    * Runs Behat tests.
    *
    * @return \Robo\Task\Base\Exec[]
@@ -159,7 +184,8 @@ class RoboFile extends \Robo\Tasks {
     $force = true;
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.gitlab-ci/config/behat.yml', 'tests/behat.yml', $force);
+      ->copy('.gitlab-ci/behat.yml', 'tests/behat.yml', $force);
+    $tasks[] = $this->taskExec('sleep 30s');
     $tasks[] = $this->taskExec('vendor/bin/behat --verbose -c tests/behat.yml');
     return $tasks;
   }
@@ -184,9 +210,9 @@ class RoboFile extends \Robo\Tasks {
     $force = TRUE;
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.gitlab-ci/config/settings.local.php',
+      ->copy('.gitlab-ci/settings.local.php',
         'web/sites/default/settings.local.php', $force)
-      ->copy('.gitlab-ci/config/.env',
+      ->copy('.gitlab-ci/.env',
         '.env', $force);
     return $tasks;
   }
@@ -205,16 +231,6 @@ class RoboFile extends \Robo\Tasks {
       ->envVars(['COMPOSER_ALLOW_SUPERUSER' => 1, 'COMPOSER_DISCARD_CHANGES' => 1] + getenv())
       ->optimizeAutoloader();
     return $tasks;
-  }
-
-  /**
-   * Command to run Chrome headless.
-   *
-   * @return \Robo\Result
-   *   The result tof the task
-   */
-  public function runChromeHeadless() {
-    return $this->taskExec('google-chrome-unstable --disable-gpu --headless --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222')->run();
   }
 
   /**
@@ -249,11 +265,10 @@ class RoboFile extends \Robo\Tasks {
     $tasks = [];
     $tasks[] = $this->taskExec('mysql -u root -proot -h mariadb -e "create database drupal"');
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.gitlab-ci/config/settings.local.php', 'web/sites/default/settings.local.php', $force);
+      ->copy('.gitlab-ci/settings.local.php', 'web/sites/default/settings.local.php', $force);
     $tasks[] = $this->taskExec('wget -O dump.sql "' . getenv('DB_DUMP_URL') . '"');
     $tasks[] = $this->drush()->rawArg('sql-cli < dump.sql');
     return $tasks;
   }
-
 
 }
