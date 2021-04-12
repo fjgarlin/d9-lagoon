@@ -169,9 +169,9 @@ class RoboFile extends \Robo\Tasks {
   function runServeDrupal()
   {
     $tasks = [];
-    // $tasks[] = $this->taskExec('vendor/bin/drush serve 80 &');
+    // $tasks[] = $this->taskExec('nohup vendor/bin/drush serve 80 &');
     $tasks[] = $this->taskExec('chown -R www-data:www-data ' . getenv('CI_PROJECT_DIR'));
-    $tasks[] = $this->taskExec('rmdir /var/www/html');
+    // $tasks[] = $this->taskExec('rmdir /var/www/html');
     $tasks[] = $this->taskExec('ln -sf ' . getenv('CI_PROJECT_DIR') . '/web /var/www/html');
     // $tasks[] = $this->taskExec('sed -ri -e \'s!/var/www/html!' . getenv('CI_PROJECT_DIR') . '/web!g\' /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf');
     $tasks[] = $this->taskExec('service apache2 start');
