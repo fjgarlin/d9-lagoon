@@ -107,7 +107,7 @@ class RoboFile extends \Robo\Tasks {
   protected function runUnitTests() {
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
+      ->copy('.gitlab-ci/config/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
       ->dir('web')
       ->exec('../vendor/bin/phpunit -c core --debug --coverage-clover ../build/logs/clover.xml --verbose modules/custom');
@@ -123,7 +123,7 @@ class RoboFile extends \Robo\Tasks {
   protected function runCoverageReport() {
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
+      ->copy('.gitlab-ci/config/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
       ->dir('web')
       ->exec('../vendor/bin/phpunit -c core --debug --verbose --coverage-html ../coverage modules/custom');
@@ -159,7 +159,7 @@ class RoboFile extends \Robo\Tasks {
     $force = true;
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/behat.yml', 'tests/behat.yml', $force);
+      ->copy('.gitlab-ci/config/behat.yml', 'tests/behat.yml', $force);
     $tasks[] = $this->taskExec('vendor/bin/behat --verbose -c tests/behat.yml');
     return $tasks;
   }
@@ -184,9 +184,9 @@ class RoboFile extends \Robo\Tasks {
     $force = TRUE;
     $tasks = [];
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/settings.local.php',
+      ->copy('.gitlab-ci/config/settings.local.php',
         'web/sites/default/settings.local.php', $force)
-      ->copy('.github/config/.env',
+      ->copy('.gitlab-ci/config/.env',
         '.env', $force);
     return $tasks;
   }
@@ -249,7 +249,7 @@ class RoboFile extends \Robo\Tasks {
     $tasks = [];
     $tasks[] = $this->taskExec('mysql -u root -proot -h mariadb -e "create database drupal"');
     $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/settings.local.php', 'web/sites/default/settings.local.php', $force);
+      ->copy('.gitlab-ci/config/settings.local.php', 'web/sites/default/settings.local.php', $force);
     $tasks[] = $this->taskExec('wget -O dump.sql "' . getenv('DB_DUMP_URL') . '"');
     $tasks[] = $this->drush()->rawArg('sql-cli < dump.sql');
     return $tasks;
