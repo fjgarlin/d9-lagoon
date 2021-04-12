@@ -84,8 +84,9 @@ drupal9ci:behat:
   variables:
     FOO: bar
     # DB_DUMP_URL: "URL to your DB dump"
+  before_script:
+    - vendor/bin/robo job:serve-drupal
   script:
-    - vendor/bin/robo job:serve-drupal &
     - vendor/bin/robo job:behat-tests
   artifacts:
     paths:
