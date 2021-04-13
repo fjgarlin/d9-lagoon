@@ -31,7 +31,7 @@ stages:
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_DATABASE: drupal
-    XDEBUG: coverage
+    XDEBUG_MODE: coverage
   script:
     - mysql --version
     - sleep 10
