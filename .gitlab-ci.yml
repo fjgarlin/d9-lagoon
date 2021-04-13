@@ -31,6 +31,7 @@ stages:
   variables:
     MYSQL_ROOT_PASSWORD: root
     MYSQL_DATABASE: drupal
+    XDEBUG: coverage
   script:
     - mysql --version
     - sleep 10
@@ -100,6 +101,7 @@ drupal9ci:cypress:
     FOO: bar
     # DB_DUMP_URL: "URL to your DB dump"
   before_script:
+    - echo xdebug.mode=coverage > /usr/local/etc/php/conf.d/xdebug.ini
     - vendor/bin/robo job:serve-drupal
   script:
     - vendor/bin/robo job:cypress-tests
