@@ -219,12 +219,10 @@ class RoboFile extends \Robo\Tasks {
     $tasks[] = $this->taskFilesystemStack()
       ->copy('.cypress/cypress.json', 'cypress.json', $force)
       ->copy('.cypress/package.json', 'package.json', $force);
-    // $tasks[] = $this->taskExec('ls');
-    // $tasks[] = $this->taskExec('ls tests');
     $tasks[] = $this->taskExec('ls tests/cypress');
     $tasks[] = $this->taskExec('sleep 30s');
     $tasks[] = $this->taskExec('npm install cypress --save-dev');
-    $tasks[] = $this->taskExec('$(npm bin)/cypress run --spec "tests/cypress/*.js"');
+    $tasks[] = $this->taskExec('$(npm bin)/cypress run');
     return $tasks;
   }
 
