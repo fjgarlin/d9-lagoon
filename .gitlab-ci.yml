@@ -105,6 +105,4 @@ drupal9ci:cypress:
     - vendor/bin/robo job:serve-drupal
   script:
     - vendor/bin/robo job:cypress-tests
-  artifacts:
-    paths:
-      - artifacts
+
