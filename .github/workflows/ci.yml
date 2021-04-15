@@ -97,11 +97,12 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: juampynr/drupal8ci:latest
       - name: Build project
-        uses: juampynr/drupal8ci:latest
         run: |
           robo job:build
 
+      - uses: juampynr/drupal9ci:latest
       - name: Run Behat tests
         run: |
           vendor/bin/robo job:serve-drupal &
