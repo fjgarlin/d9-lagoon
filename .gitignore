@@ -17,3 +17,10 @@
 # DB dumps
 /*.sql
 /*.sql.gz
+
+# Local testing
+cypress.json
+cypress/
+node_modules/
+package-lock.json
+package.json
