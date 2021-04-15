@@ -186,7 +186,6 @@ class RoboFile extends \Robo\Tasks {
     $tasks[] = $this->taskExec('chown -R www-data:www-data ' . getenv('GITHUB_WORKSPACE'));
     $tasks[] = $this->taskExec('ln -sf ' . getenv('GITHUB_WORKSPACE') . '/web /var/www/html');
     $tasks[] = $this->taskExec('service apache2 start');
-    // $tasks[] = $this->taskExec('vendor/bin/drush serve 80 &');
     return $tasks;
   }
 
