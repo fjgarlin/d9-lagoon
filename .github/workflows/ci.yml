@@ -98,6 +98,7 @@ jobs:
           fetch-depth: 1
 
       - name: Build project
+        uses: juampynr/drupal8ci:latest
         run: |
           robo job:build
 
