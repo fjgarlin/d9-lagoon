@@ -2,19 +2,11 @@ version: "2"
 
 services:
   mariadb:
-    image: wodby/mariadb:$MARIADB_TAG
-    container_name: "${PROJECT_NAME}_mariadb"
-    stop_grace_period: 30s
+    image: mariadb:10.3
     environment:
-      MYSQL_ROOT_PASSWORD: $DB_ROOT_PASSWORD
-      MYSQL_DATABASE: $DB_NAME
-      MYSQL_USER: $DB_USER
-      MYSQL_PASSWORD: $DB_PASSWORD
-    volumes:
-      - ./mariadb-init:/docker-entrypoint-initdb.d # Place init .sql file(s) here.
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
 
   php:
     image: juampynr/drupal8ci:latest
-    container_name: "${PROJECT_NAME}_php"
     volumes:
       - ./:/var/www/html

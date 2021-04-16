@@ -176,6 +176,7 @@ class RoboFile extends \Robo\Tasks
         $tasks = [];
         $tasks[] = $this->taskExec('docker-compose exec -T php pwd');
         $tasks[] = $this->taskExec('docker-compose exec -T php ls');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ls web');
         $tasks[] = $this->taskExec('docker-compose exec -T php composer install');
         // $tasks[] = $this->taskComposerValidate()->noCheckPublish();
         // $tasks[] = $this->taskComposerInstall()
