@@ -1,5 +1,4 @@
 <?php
-
 // @codingStandardsIgnoreStart
 
 /**
@@ -18,7 +17,7 @@ class RoboFile extends \Robo\Tasks
      *
      * @var string
      */
-    const DB_URL = 'mysql://root@127.0.0.1/drupal8';
+    const DB_URL = 'mysql://root@127.0.0.1/drupal';
 
     /**
      * Command to run unit tests.
@@ -84,24 +83,41 @@ class RoboFile extends \Robo\Tasks
     }
 
     /**
+     * Command to run Cypress tests.
+     *
+     * @return \Robo\Result
+     *   The result tof the collection of tasks.
+     */
+    public function jobRunCypressTests()
+    {
+        $collection = $this->collectionBuilder();
+        $collection->addTask($this->installDependencies());
+        $collection->addTask($this->waitForDatabase());
+        $collection->addTaskList($this->importDatabase());
+        $collection->addTaskList($this->runUpdatePath());
+        $collection->addTaskList($this->runCypressTests());
+        return $collection->run();
+    }
+
+    /**
      * Imports and updates the database.
      *
      * This task assumes that there is an environment variable $DB_DUMP_URL
      * that contains a URL to a database dump. Ideally, you should set up drush
      * site aliases and then replace this task by a drush sql-sync one. See the
-     * README at lullabot/drupal8ci for further details.
+     * README at lullabot/drupal9ci for further details.
      *
      * @return \Robo\Task\Base\Exec[]
      *   An array of tasks.
      */
     protected function importDatabase()
     {
-        $force = true;
+        $force = TRUE;
         $tasks = [];
-        $tasks[] = $this->taskExec('mysql -u root -h 127.0.0.1 -e "create database drupal8"');
+        $tasks[] = $this->taskExec('mysql -u root -h 127.0.0.1 -e "create database drupal"');
         $tasks[] = $this->taskFilesystemStack()
             ->copy('.circleci/config/settings.local.php', 'web/sites/default/settings.local.php', $force);
-        $tasks[] = $this->taskExec('wget -O dump.sql ' . getenv('DB_DUMP_URL'));
+        $tasks[] = $this->taskExec('wget -O dump.sql "' . getenv('DB_DUMP_URL') . '"');
         $tasks[] = $this->drush()->rawArg('sql-cli < dump.sql');
         return $tasks;
     }
@@ -118,6 +134,7 @@ class RoboFile extends \Robo\Tasks
         $tasks = [];
         $tasks[] = $this->drush()->args('updatedb')->option('yes')->option('verbose');
         $tasks[] = $this->drush()->args('config-import')->option('yes')->option('verbose');
+        $tasks[] = $this->drush()->args('cr')->option('verbose');
         return $tasks;
     }
 
@@ -129,12 +146,32 @@ class RoboFile extends \Robo\Tasks
      */
     protected function runBehatTests()
     {
-        $force = true;
+        $force = TRUE;
         $tasks = [];
         $tasks[] = $this->taskExec('service apache2 start');
         $tasks[] = $this->taskFilesystemStack()
             ->copy('.circleci/config/behat.yml', 'tests/behat.yml', $force);
         $tasks[] = $this->taskExec('vendor/bin/behat --verbose -c tests/behat.yml');
+        return $tasks;
+    }
+
+    /**
+     * Runs Cypress tests.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function runCypressTests()
+    {
+        $force = TRUE;
+        $tasks = [];
+        $tasks[] = $this->taskExec('service apache2 start');
+        $tasks[] = $this->taskFilesystemStack()
+            ->copy('.cypress/cypress.json', 'cypress.json', $force)
+            ->copy('.cypress/package.json', 'package.json', $force);
+        $tasks[] = $this->taskExec('sleep 30s');
+        $tasks[] = $this->taskExec('npm install cypress --save-dev');
+        $tasks[] = $this->taskExec('$(npm bin)/cypress run');
         return $tasks;
     }
 
@@ -169,7 +206,6 @@ class RoboFile extends \Robo\Tasks
      */
     protected function installDrupal()
     {
-
         $task = $this->drush()
             ->args('site-install')
             ->option('verbose')
@@ -186,7 +222,7 @@ class RoboFile extends \Robo\Tasks
      */
     protected function runUnitTests()
     {
-        $force = true;
+        $force = TRUE;
         $tasks = [];
         $tasks[] = $this->taskFilesystemStack()
             ->copy('.circleci/config/phpunit.xml', 'web/core/phpunit.xml', $force)
@@ -205,7 +241,7 @@ class RoboFile extends \Robo\Tasks
      */
     protected function runUnitTestsWithCoverage()
     {
-        $force = true;
+        $force = TRUE;
         $tasks = [];
         $tasks[] = $this->taskFilesystemStack()
             ->copy('.circleci/config/phpunit.xml', 'web/core/phpunit.xml', $force)
