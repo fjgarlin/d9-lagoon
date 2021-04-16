@@ -11,6 +11,9 @@ $databases['default']['default'] = array (
   'driver' => 'mysql',
 );
 
+// Display errors.
+$config['system.logging']['error_level'] = 'verbose';
+
 if (empty($settings['hash_salt'])) {
   $settings['hash_salt'] = 'drupal-ci';
 }
