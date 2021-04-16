@@ -72,7 +72,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   cypress:
-    image: wodby/node:$NODE_TAG
+    image: cypress/base:14.16.0
     container_name: "${PROJECT_NAME}_node"
     working_dir: /var/www/html
     # user: root
