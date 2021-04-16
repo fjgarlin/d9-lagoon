@@ -174,12 +174,29 @@ class RoboFile extends \Robo\Tasks
      */
     protected function runComposer() {
         $tasks = [];
+        $tasks[] = $this->taskExec('docker-compose exec -T php pwd');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ls');
         $tasks[] = $this->taskExec('docker-compose exec -T php composer install');
         // $tasks[] = $this->taskComposerValidate()->noCheckPublish();
         // $tasks[] = $this->taskComposerInstall()
         //     ->noInteraction()
         //     ->envVars(['COMPOSER_ALLOW_SUPERUSER' => 1, 'COMPOSER_DISCARD_CHANGES' => 1] + getenv())
         //     ->optimizeAutoloader();
+        return $tasks;
+    }
+
+    /**
+     * Serves Drupal.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    function runServeDrupal()
+    {
+        $tasks = [];
+        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data /opt/drupal');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf /opt/drupal/web /var/www/html');
+        $tasks[] = $this->taskExec('docker-compose exec -T php service apache2 start');
         return $tasks;
     }
 
