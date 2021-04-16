@@ -82,5 +82,5 @@ services:
     - "3000"
     volumes:
     - ./:/var/www/html
-    - node_modules:/var/www/html/node_modules
+    - ./node_modules:/var/www/html/node_modules
     command: tail -F web/index.php
