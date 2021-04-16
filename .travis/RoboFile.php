@@ -136,6 +136,7 @@ class RoboFile extends \Robo\Tasks
 
         $tasks[] = $this->taskExec('docker-compose pull --parallel');
         $tasks[] = $this->taskExec('docker-compose up -d');
+        $tasks[] = $this->taskExec('docker-compose ps');
         return $tasks;
     }
 
@@ -227,10 +228,8 @@ class RoboFile extends \Robo\Tasks
     protected function runCypressTests()
     {
         $tasks = [];
-        $tasks[] = $this->taskExecStack()
-            ->exec('docker-compose exec -T node npm install cypress --save-dev');
-        $tasks[] = $this->taskExecStack()
-            ->exec('docker-compose exec -T node npm $(npm bin)/cypress run');
+        $tasks[] = $this->taskExec('docker-compose exec -T node npm install cypress --save-dev');
+        $tasks[] = $this->taskExec('docker-compose exec -T node npm $(npm bin)/cypress run');
         return $tasks;
     }
 
