@@ -73,7 +73,7 @@ services:
 
   cypress:
     image: wodby/node:latest
-    container_name: "${PROJECT_NAME}_node"
+    container_name: "${PROJECT_NAME}_cypress"
     depends_on:
       - apache
     volumes:
