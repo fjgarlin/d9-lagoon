@@ -74,5 +74,7 @@ services:
   node:
     image: wodby/node:latest
     container_name: "${PROJECT_NAME}_node"
+    depends_on:
+      - apache
     volumes:
       - ./:/var/www/html

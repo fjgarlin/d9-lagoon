@@ -20,7 +20,7 @@ env:
   matrix:
     # - JOB=job:check-coding-standards
     # - JOB=job:run-unit-tests
-    - JOB=job:run-behat-tests
+    # - JOB=job:run-behat-tests
     - JOB=job:run-cypress-tests
 
 before_install:
