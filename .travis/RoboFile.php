@@ -194,8 +194,8 @@ class RoboFile extends \Robo\Tasks
     function runServeDrupal()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data /opt/drupal');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf /opt/drupal/web /var/www/html');
+        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . getenv('TRAVIS_BUILD_DIR'));
+        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf ' . getenv('TRAVIS_BUILD_DIR') . '/web /var/www/html');
         $tasks[] = $this->taskExec('docker-compose exec -T php service apache2 start');
         return $tasks;
     }

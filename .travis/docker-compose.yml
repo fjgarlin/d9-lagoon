@@ -17,4 +17,4 @@ services:
     image: juampynr/drupal8ci:latest
     container_name: "${PROJECT_NAME}_php"
     volumes:
-      - ./:/opt/drupal
+      - ./:/var/www/html
