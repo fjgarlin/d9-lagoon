@@ -72,13 +72,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   cypress:
-    # the Docker image to use from https://github.com/cypress-io/cypress-docker-images
-    image: "cypress/included:7.1.0"
-    container_name: "${PROJECT_NAME}_cypress"
-    depends_on:
-      - apache
+    image: wodby/drupal-node:$DRUPAL_NODE_TAG
+    container_name: "${PROJECT_NAME}_drupal_nodejs"
+    labels:
+    - "traefik.http.routers.${PROJECT_NAME}_drupal_node.rule=Host(`drupal_node.${PROJECT_BASE_URL}`)"
     environment:
-      - CYPRESS_baseUrl=http://apache
-    working_dir: /e2e
-    volumes:
-      - ./:/e2e
+      NODE_SERVICE_KEY: node-service-key
