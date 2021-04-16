@@ -71,7 +71,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  node:
+  cypress:
     image: wodby/node:latest
     container_name: "${PROJECT_NAME}_node"
     depends_on:

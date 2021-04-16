@@ -132,8 +132,6 @@ class RoboFile extends \Robo\Tasks
             ->copy('.travis/config/behat.yml', 'tests/behat.yml', $force)
             ->copy('.travis/config/cypress.json', 'cypress.json', $force)
             ->copy('.cypress/package.json', 'package.json', $force);
-        $tasks[] = $this->taskExec('sleep 30s');
-
         $tasks[] = $this->taskExec('docker-compose pull --parallel');
         $tasks[] = $this->taskExec('docker-compose up -d');
         $tasks[] = $this->taskExec('docker-compose ps');
@@ -228,8 +226,8 @@ class RoboFile extends \Robo\Tasks
     protected function runCypressTests()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T node npm install cypress --save-dev');
-        $tasks[] = $this->taskExec('docker-compose exec -T node npm $(npm bin)/cypress run');
+        $tasks[] = $this->taskExec('docker-compose exec cypress npm install cypress --save-dev');
+        $tasks[] = $this->taskExec('docker-compose exec cypress npm $(npm bin)/cypress run');
         return $tasks;
     }
 
