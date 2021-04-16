@@ -19,11 +19,6 @@ class RoboFile extends \Robo\Tasks
     const DB_URL = 'sqlite://tmp/site.sqlite';
 
     /**
-     * The website's URL.
-     */
-    const DRUPAL_URL = 'http://drupal.docker.localhost:8000';
-
-    /**
      * RoboFile constructor.
      */
     public function __construct()
