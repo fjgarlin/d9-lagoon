@@ -70,6 +70,7 @@ class RoboFile extends \Robo\Tasks
         $collection = $this->collectionBuilder();
         $collection->addTaskList($this->downloadDatabase());
         $collection->addTaskList($this->buildEnvironment());
+        $collection->addTaskList($this->runComposer());
         $collection->addTask($this->waitForDrupal());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runBehatTests());
@@ -87,6 +88,7 @@ class RoboFile extends \Robo\Tasks
         $collection = $this->collectionBuilder();
         $collection->addTaskList($this->downloadDatabase());
         $collection->addTaskList($this->buildEnvironment());
+        $collection->addTaskList($this->runComposer());
         $collection->addTask($this->waitForDrupal());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runCypressTests());
@@ -161,6 +163,23 @@ class RoboFile extends \Robo\Tasks
         $tasks[] = $this->taskExec('docker-compose exec -T php vendor/bin/drush --yes updatedb');
         $tasks[] = $this->taskExec('docker-compose exec -T php vendor/bin/drush --yes config-import');
         $tasks[] = $this->taskExec('docker-compose exec -T php vendor/bin/drush cr');
+        return $tasks;
+    }
+
+    /**
+     * Runs composer commands.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function runComposer() {
+        $tasks = [];
+        $tasks[] = $this->taskExec('docker-compose exec -T php composer install');
+        // $tasks[] = $this->taskComposerValidate()->noCheckPublish();
+        // $tasks[] = $this->taskComposerInstall()
+        //     ->noInteraction()
+        //     ->envVars(['COMPOSER_ALLOW_SUPERUSER' => 1, 'COMPOSER_DISCARD_CHANGES' => 1] + getenv())
+        //     ->optimizeAutoloader();
         return $tasks;
     }
 
