@@ -72,9 +72,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   cypress:
-    image: wodby/drupal-node:$DRUPAL_NODE_TAG
-    container_name: "${PROJECT_NAME}_drupal_nodejs"
+    image: wodby/node:latest
+    container_name: "${PROJECT_NAME}_node"
+    working_dir: /var/www/html
     labels:
-    - "traefik.http.routers.${PROJECT_NAME}_drupal_node.rule=Host(`drupal_node.${PROJECT_BASE_URL}`)"
-    environment:
-      NODE_SERVICE_KEY: node-service-key
+    - "traefik.http.services.${PROJECT_NAME}_node.loadbalancer.server.port=3000"
+    - "traefik.http.routers.${PROJECT_NAME}_node.rule=Host(`node.${PROJECT_BASE_URL}`)"
+    expose:
+    - "3000"
+    volumes:
+    - ./:/var/www/html
