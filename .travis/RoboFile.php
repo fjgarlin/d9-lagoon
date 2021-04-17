@@ -24,6 +24,11 @@ class RoboFile extends \Robo\Tasks
     const BASE_PATH = '/var/html/www';
 
     /**
+     * Mount path where the web files will be.
+     */
+    const MOUNT_PATH = '/opt/drupal';
+
+    /**
      * RoboFile constructor.
      */
     public function __construct()
@@ -164,9 +169,9 @@ class RoboFile extends \Robo\Tasks
     protected function runUpdatePath()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php vendor/bin/drush --yes updatedb');
-        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php vendor/bin/drush --yes config-import');
-        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php vendor/bin/drush cr');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush --yes updatedb');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush --yes config-import');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush cr');
         return $tasks;
     }
 
@@ -182,8 +187,8 @@ class RoboFile extends \Robo\Tasks
         $tasks = [];
         $tasks[] = $this->taskExec('docker-compose exec -T php rm -rf ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php mkdir -p ' . dirname(static::BASE_PATH));
-        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data /opt/drupal/web');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf /opt/drupal/web ' . static::BASE_PATH);
+        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . static::MOUNT_PATH . '/web');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf ' . static::MOUNT_PATH . '/web ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php service apache2 start');
         return $tasks;
     }
@@ -232,7 +237,7 @@ class RoboFile extends \Robo\Tasks
     {
         $tasks = [];
         $tasks[] = $this->taskExecStack()
-            ->exec('docker-compose exec -T -w ' . static::BASE_PATH . ' php vendor/bin/behat --verbose -c tests/behat.yml');
+            ->exec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/behat --verbose -c tests/behat.yml');
         return $tasks;
     }
 
@@ -245,8 +250,8 @@ class RoboFile extends \Robo\Tasks
     protected function runCypressTests()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php npm install cypress --save-dev');
-        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php $(npm bin)/cypress run');
+        $tasks[] = $this->taskExec('docker-compose exec -T php npm --prefix ' . static::MOUNT_PATH . ' install cypress --save-dev');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/node_modules/.bin/cypress run');
         return $tasks;
     }
 
