@@ -164,9 +164,9 @@ class RoboFile extends \Robo\Tasks
     protected function runUpdatePath()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T php cd ' . static::BASE_PATH .' && vendor/bin/drush --yes updatedb');
-        $tasks[] = $this->taskExec('docker-compose exec -T php cd ' . static::BASE_PATH .' && vendor/bin/drush --yes config-import');
-        $tasks[] = $this->taskExec('docker-compose exec -T php cd ' . static::BASE_PATH .' && vendor/bin/drush cr');
+        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php vendor/bin/drush --yes updatedb');
+        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php vendor/bin/drush --yes config-import');
+        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php vendor/bin/drush cr');
         return $tasks;
     }
 
@@ -232,7 +232,7 @@ class RoboFile extends \Robo\Tasks
     {
         $tasks = [];
         $tasks[] = $this->taskExecStack()
-            ->exec('docker-compose exec -T php cd ' . static::BASE_PATH .' && vendor/bin/behat --verbose -c tests/behat.yml');
+            ->exec('docker-compose exec -T -w ' . static::BASE_PATH . ' php vendor/bin/behat --verbose -c tests/behat.yml');
         return $tasks;
     }
 
@@ -245,8 +245,8 @@ class RoboFile extends \Robo\Tasks
     protected function runCypressTests()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T php cd ' . static::BASE_PATH .' && npm install cypress --save-dev');
-        $tasks[] = $this->taskExec('docker-compose exec -T php cd ' . static::BASE_PATH .' && $(npm bin)/cypress run');
+        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php npm install cypress --save-dev');
+        $tasks[] = $this->taskExec('docker-compose exec -T -w ' . static::BASE_PATH . ' php $(npm bin)/cypress run');
         return $tasks;
     }
 
