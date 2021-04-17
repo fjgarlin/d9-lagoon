@@ -78,9 +78,9 @@ class RoboFile extends \Robo\Tasks
     public function jobRunBehatTests()
     {
         $collection = $this->collectionBuilder();
-        $collection->addTaskList($this->downloadDatabase());
         $collection->addTaskList($this->buildEnvironment());
-        $collection->addTaskList($this->runServeDrupal());
+        $collection->addTaskList($this->serveDrupal());
+        $collection->addTaskList($this->importDatabase());
         $collection->addTask($this->waitForDrupal());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runBehatTests());
@@ -96,29 +96,13 @@ class RoboFile extends \Robo\Tasks
     public function jobRunCypressTests()
     {
         $collection = $this->collectionBuilder();
-        $collection->addTaskList($this->downloadDatabase());
         $collection->addTaskList($this->buildEnvironment());
-        $collection->addTaskList($this->runServeDrupal());
+        $collection->addTaskList($this->serveDrupal());
+        $collection->addTaskList($this->importDatabase());
         $collection->addTask($this->waitForDrupal());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runCypressTests());
         return $collection->run();
-    }
-
-    /**
-     * Download's database to use within a Docker environment.
-     *
-     * @return \Robo\Task\Base\Exec[]
-     *   An array of tasks.
-     */
-    protected function downloadDatabase()
-    {
-        $tasks = [];
-        $tasks[] = $this->taskFilesystemStack()
-            ->mkdir('mariadb-init');
-        $tasks[] = $this->taskExec('wget "' . getenv('DB_DUMP_URL') . '"')
-            ->dir('mariadb-init');
-        return $tasks;
     }
 
     /**
@@ -181,15 +165,34 @@ class RoboFile extends \Robo\Tasks
      * @return \Robo\Task\Base\Exec[]
      *   An array of tasks.
      */
-    protected function runServeDrupal()
+    protected function serveDrupal()
     {
-        // Data on /opt/drupal/web, which means web folder on /opt/drupal/web/web
         $tasks = [];
         $tasks[] = $this->taskExec('docker-compose exec -T php rm -rf ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php mkdir -p ' . dirname(static::BASE_PATH));
         $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . static::MOUNT_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf ' . static::MOUNT_PATH . ' ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php service apache2 start');
+        return $tasks;
+    }
+
+    /**
+     * Imports and updates the database.
+     *
+     * This task assumes that there is an environment variable $DB_DUMP_URL
+     * that contains a URL to a database dump. Ideally, you should set up drush
+     * site aliases and then replace this task by a drush sql-sync one. See the
+     * README at lullabot/drupal9ci for further details.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function importDatabase()
+    {
+        $tasks = [];
+        $tasks[] = $this->taskExec('mysql -u root -h mariadb -e "create database drupal"');
+        $tasks[] = $this->taskExec('wget -O dump.sql "' . getenv('DB_DUMP_URL') . '"');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush sql-cli < dump.sql');
         return $tasks;
     }
 
