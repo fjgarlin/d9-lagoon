@@ -26,7 +26,7 @@ class RoboFile extends \Robo\Tasks
     /**
      * Mount path where the web files will be.
      */
-    const MOUNT_PATH = '/opt/drupal/web';
+    const MOUNT_PATH = '/opt/drupal';
 
     /**
      * RoboFile constructor.

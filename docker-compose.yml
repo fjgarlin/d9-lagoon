@@ -11,4 +11,4 @@ services:
       context: .
       dockerfile: php-node.dockerfile
     volumes:
-      - ./:/opt/drupal/web
+      - ./:/opt/drupal
