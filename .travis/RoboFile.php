@@ -121,7 +121,7 @@ class RoboFile extends \Robo\Tasks
             ->copy('.travis/.env', '.env', $force)
             ->copy('.travis/config/settings.local.php', 'web/sites/default/settings.local.php', $force)
             ->copy('.travis/config/behat.yml', 'tests/behat.yml', $force)
-            ->copy('.travis/config/cypress.json', 'cypress.json', $force)
+            ->copy('.cypress/cypress.json', 'cypress.json', $force)
             ->copy('.cypress/package.json', 'package.json', $force);
         $tasks[] = $this->taskExec('docker-compose pull');
         $tasks[] = $this->taskExec('docker-compose up -d');
@@ -153,9 +153,9 @@ class RoboFile extends \Robo\Tasks
     protected function runUpdatePath()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush --yes updatedb');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush --yes config-import');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush cr');
+        $tasks[] = $this->taskExec('docker-compose exec -T php bash -c "cd ' . static::MOUNT_PATH . ' && vendor/bin/drush --yes updatedb"');
+        $tasks[] = $this->taskExec('docker-compose exec -T php bash -c "cd ' . static::MOUNT_PATH . ' && vendor/bin/drush --yes config-import"');
+        $tasks[] = $this->taskExec('docker-compose exec -T php bash -c "cd ' . static::MOUNT_PATH . ' && vendor/bin/drush cr"');
         return $tasks;
     }
 
@@ -190,7 +190,6 @@ class RoboFile extends \Robo\Tasks
     protected function importDatabase()
     {
         $tasks = [];
-        // putenv('DB_DUMP_URL=https://raw.githubusercontent.com/fjgarlin/d9-lagoon/9.x/assets/d9-lagoon-dump.sql');
         $tasks[] = $this->taskExec('docker-compose exec -T php mysql -u root -h mariadb -e "create database if not exists drupal"');
         $tasks[] = $this->taskExec('docker-compose exec -T php wget -O /tmp/dump.sql "' . getenv('DB_DUMP_URL') . '"');
         $tasks[] = $this->taskExec('docker-compose exec -T php bash -c "' . static::MOUNT_PATH . '/vendor/bin/drush sql-cli < /tmp/dump.sql"');
@@ -241,7 +240,7 @@ class RoboFile extends \Robo\Tasks
     {
         $tasks = [];
         $tasks[] = $this->taskExecStack()
-            ->exec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/behat --verbose -c tests/behat.yml');
+            ->exec('docker-compose exec -T php bash -c "cd ' . static::MOUNT_PATH . ' && vendor/bin/behat --verbose -c tests/behat.yml"');
         return $tasks;
     }
 
@@ -254,7 +253,7 @@ class RoboFile extends \Robo\Tasks
     protected function runCypressTests()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T php npm --prefix ' . static::MOUNT_PATH . ' install cypress --save-dev --unsafe-perm');
+        $tasks[] = $this->taskExec('docker-compose exec -T php bash -c "cd ' . static::MOUNT_PATH . ' && npm install cypress --save-dev --unsafe-perm"');
         $tasks[] = $this->taskExec("docker-compose exec -T php bash -c 'cd " . static::MOUNT_PATH . " && $(npm bin)/cypress run'");
         //$tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/node_modules/.bin/cypress run -C ' . static::MOUNT_PATH . '/cypress.json');
         return $tasks;
