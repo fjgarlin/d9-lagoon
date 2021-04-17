@@ -182,6 +182,9 @@ class RoboFile extends \Robo\Tasks
         $tasks[] = $this->taskDockerComposeExec('mkdir -p ' . dirname(static::BASE_PATH));
         $tasks[] = $this->taskDockerComposeExec('chown -R www-data:www-data ' . static::MOUNT_PATH);
         $tasks[] = $this->taskDockerComposeExec('ln -sf ' . static::MOUNT_PATH . '/web ' . static::BASE_PATH);
+        $tasks[] = $this->taskDockerComposeExec('ls -la ' . static::MOUNT_PATH);
+        $tasks[] = $this->taskDockerComposeExec('ls -la ' . static::MOUNT_PATH . '/web');
+        $tasks[] = $this->taskDockerComposeExec('ls -la ' . static::BASE_PATH);
         $tasks[] = $this->taskDockerComposeExec('service apache2 start');
         return $tasks;
     }
@@ -262,7 +265,7 @@ class RoboFile extends \Robo\Tasks
     protected function runCypressTests()
     {
         $tasks = [];
-        $tasks[] = $this->taskDockerComposeExec('npm install cypress --save-dev --unsafe-perm"');
+        $tasks[] = $this->taskDockerComposeExec('npm install cypress --save-dev --unsafe-perm');
         $tasks[] = $this->taskDockerComposeExec('$(npm bin)/cypress run');
         return $tasks;
     }
