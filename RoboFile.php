@@ -255,8 +255,9 @@ class RoboFile extends \Robo\Tasks
     protected function runCypressTests()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec --user root -T php npm --prefix ' . static::MOUNT_PATH . ' install cypress --save-dev');
-        $tasks[] = $this->taskExec('docker-compose exec --user root -T php ' . static::MOUNT_PATH . '/node_modules/.bin/cypress run');
+        $tasks[] = $this->taskExec('docker-compose exec -T php npm --prefix ' . static::MOUNT_PATH . ' install cypress --save-dev --unsafe-perm');
+        $tasks[] = $this->taskExec("docker-compose exec -T php bash -c 'cd " . static::MOUNT_PATH . " && $(npm bin)/cypress run'");
+        //$tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/node_modules/.bin/cypress run -C ' . static::MOUNT_PATH . '/cypress.json');
         return $tasks;
     }
 
