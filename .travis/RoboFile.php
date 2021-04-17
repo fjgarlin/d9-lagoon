@@ -183,7 +183,7 @@ class RoboFile extends \Robo\Tasks
         $tasks[] = $this->taskDockerComposeExec('mkdir -p ' . dirname(static::APACHE_PATH));
         $tasks[] = $this->taskDockerComposeExec('chown -R www-data:www-data ' . static::MOUNT_PATH);
         $tasks[] = $this->taskDockerComposeExec('ln -sf ' . static::MOUNT_PATH . '/web ' . static::APACHE_PATH);
-        $tasks[] = $this->taskDockerComposeExec('chmod -R 777 ' . static::MOUNT_PATH);
+        // $tasks[] = $this->taskDockerComposeExec('chmod -R 777 ' . static::MOUNT_PATH);
         // $tasks[] = $this->taskDockerComposeExec('chown -h www-data:www-data ' . static::APACHE_PATH);
         $tasks[] = $this->taskDockerComposeExec('service apache2 start');
         return $tasks;
