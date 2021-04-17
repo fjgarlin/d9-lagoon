@@ -21,7 +21,7 @@ class RoboFile extends \Robo\Tasks
     /**
      * Base path where the web files will be.
      */
-    const BASE_PATH = '/var/html/www';
+    const APACHE_PATH = '/var/html/www';
 
     /**
      * Mount path where the web files will be.
@@ -179,12 +179,12 @@ class RoboFile extends \Robo\Tasks
     protected function serveDrupal()
     {
         $tasks = [];
-        $tasks[] = $this->taskDockerComposeExec('rm -rf ' . static::BASE_PATH);
-        $tasks[] = $this->taskDockerComposeExec('mkdir -p ' . dirname(static::BASE_PATH));
+        $tasks[] = $this->taskDockerComposeExec('rm -rf ' . static::APACHE_PATH);
+        $tasks[] = $this->taskDockerComposeExec('mkdir -p ' . dirname(static::APACHE_PATH));
         $tasks[] = $this->taskDockerComposeExec('chown -R www-data:www-data ' . static::MOUNT_PATH);
-        $tasks[] = $this->taskDockerComposeExec('ln -sf ' . static::MOUNT_PATH . '/web ' . static::BASE_PATH);
+        $tasks[] = $this->taskDockerComposeExec('ln -sf ' . static::MOUNT_PATH . '/web ' . static::APACHE_PATH);
         $tasks[] = $this->taskDockerComposeExec('chmod -R 777 ' . static::MOUNT_PATH);
-        // $tasks[] = $this->taskDockerComposeExec('chown -h www-data:www-data ' . static::BASE_PATH);
+        // $tasks[] = $this->taskDockerComposeExec('chown -h www-data:www-data ' . static::APACHE_PATH);
         $tasks[] = $this->taskDockerComposeExec('service apache2 start');
         return $tasks;
     }
