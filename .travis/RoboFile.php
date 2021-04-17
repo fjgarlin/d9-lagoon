@@ -193,7 +193,7 @@ class RoboFile extends \Robo\Tasks
         // putenv('DB_DUMP_URL=https://raw.githubusercontent.com/fjgarlin/d9-lagoon/9.x/assets/d9-lagoon-dump.sql');
         $tasks[] = $this->taskExec('docker-compose exec -T php mysql -u root -h mariadb -e "create database if not exists drupal"');
         $tasks[] = $this->taskExec('docker-compose exec -T php wget -O /tmp/dump.sql "' . getenv('DB_DUMP_URL') . '"');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush sql-cli < /tmp/dump.sql');
+        $tasks[] = $this->taskExec('docker-compose exec -T php bash -c "' . static::MOUNT_PATH . '/vendor/bin/drush sql-cli < /tmp/dump.sql"');
         return $tasks;
     }
 
