@@ -117,6 +117,7 @@ class RoboFile extends \Robo\Tasks
         $tasks = [];
         $tasks[] = $this->taskFilesystemStack()
             ->copy('.travis/docker-compose.yml', 'docker-compose.yml', $force)
+            ->copy('.travis/php-node.dockerfile', 'php-node.dockerfile', $force)
             ->copy('.travis/traefik.yml', 'traefik.yml', $force)
             ->copy('.travis/.env', '.env', $force)
             ->copy('.travis/config/settings.local.php', 'web/sites/default/settings.local.php', $force)
@@ -203,6 +204,7 @@ class RoboFile extends \Robo\Tasks
     protected function importDatabase()
     {
         $tasks = [];
+        putenv('DB_DUMP_URL="https://raw.githubusercontent.com/fjgarlin/d9-lagoon/9.x/assets/d9-lagoon-dump.sql"');
         $tasks[] = $this->taskDockerComposeExec('mysql -u root -h mariadb -e "create database if not exists drupal"');
         $tasks[] = $this->taskDockerComposeExec('wget -O /tmp/dump.sql "' . getenv('DB_DUMP_URL') . '"');
         $tasks[] = $this->taskDockerComposeExec('vendor/bin/drush sql-cli < /tmp/dump.sql');

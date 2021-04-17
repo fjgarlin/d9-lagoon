@@ -117,6 +117,7 @@ class RoboFile extends \Robo\Tasks
         $tasks = [];
         $tasks[] = $this->taskFilesystemStack()
             ->copy('.travis/docker-compose.yml', 'docker-compose.yml', $force)
+            ->copy('.travis/php-node.dockerfile', 'php-node.dockerfile', $force)
             ->copy('.travis/traefik.yml', 'traefik.yml', $force)
             ->copy('.travis/.env', '.env', $force)
             ->copy('.travis/config/settings.local.php', 'web/sites/default/settings.local.php', $force)
