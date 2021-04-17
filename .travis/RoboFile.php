@@ -70,7 +70,7 @@ class RoboFile extends \Robo\Tasks
         $collection = $this->collectionBuilder();
         $collection->addTaskList($this->downloadDatabase());
         $collection->addTaskList($this->buildEnvironment());
-        $collection->addTaskList($this->runComposer());
+        $collection->addTaskList($this->runServeDrupal());
         $collection->addTask($this->waitForDrupal());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runBehatTests());
@@ -88,7 +88,7 @@ class RoboFile extends \Robo\Tasks
         $collection = $this->collectionBuilder();
         $collection->addTaskList($this->downloadDatabase());
         $collection->addTaskList($this->buildEnvironment());
-        $collection->addTaskList($this->runComposer());
+        $collection->addTaskList($this->runServeDrupal());
         $collection->addTask($this->waitForDrupal());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runCypressTests());
@@ -174,10 +174,6 @@ class RoboFile extends \Robo\Tasks
      */
     protected function runComposer() {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T php pwd');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ls');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ls web');
-        $tasks[] = $this->taskExec('docker-compose exec -T php composer install');
         // $tasks[] = $this->taskComposerValidate()->noCheckPublish();
         // $tasks[] = $this->taskComposerInstall()
         //     ->noInteraction()
@@ -192,11 +188,11 @@ class RoboFile extends \Robo\Tasks
      * @return \Robo\Task\Base\Exec[]
      *   An array of tasks.
      */
-    function runServeDrupal()
+    protected function runServeDrupal()
     {
         $tasks = [];
         $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . getenv('TRAVIS_BUILD_DIR'));
-        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf ' . getenv('TRAVIS_BUILD_DIR') . '/web /var/www/html');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf ' . getenv('TRAVIS_BUILD_DIR') . '/web/web /var/www/html');
         $tasks[] = $this->taskExec('docker-compose exec -T php service apache2 start');
         return $tasks;
     }
