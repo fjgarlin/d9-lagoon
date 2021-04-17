@@ -129,9 +129,8 @@ class RoboFile extends \Robo\Tasks
             ->copy('.travis/config/behat.yml', 'tests/behat.yml', $force)
             ->copy('.travis/config/cypress.json', 'cypress.json', $force)
             ->copy('.cypress/package.json', 'package.json', $force);
-        $tasks[] = $this->taskExec('docker-compose pull --parallel');
+        $tasks[] = $this->taskExec('docker-compose pull');
         $tasks[] = $this->taskExec('docker-compose up -d');
-        $tasks[] = $this->taskExec('docker-compose ps');
         return $tasks;
     }
 

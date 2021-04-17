@@ -9,4 +9,4 @@ services:
   php:
     image: juampynr/drupal8ci:latest
     volumes:
-      - ./:/var/www/html
+      - ./:/opt/drupal
