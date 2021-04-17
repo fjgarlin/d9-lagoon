@@ -26,7 +26,7 @@ class RoboFile extends \Robo\Tasks
     /**
      * Mount path where the web files will be.
      */
-    const MOUNT_PATH = '/opt/drupal';
+    const MOUNT_PATH = '/opt/drupal/web';
 
     /**
      * RoboFile constructor.
@@ -187,8 +187,8 @@ class RoboFile extends \Robo\Tasks
         $tasks = [];
         $tasks[] = $this->taskExec('docker-compose exec -T php rm -rf ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php mkdir -p ' . dirname(static::BASE_PATH));
-        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . static::MOUNT_PATH . '/web');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf ' . static::MOUNT_PATH . '/web ' . static::BASE_PATH);
+        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . static::MOUNT_PATH);
+        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf ' . static::MOUNT_PATH . ' ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php service apache2 start');
         return $tasks;
     }
