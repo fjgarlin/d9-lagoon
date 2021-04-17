@@ -180,9 +180,13 @@ class RoboFile extends \Robo\Tasks
     {
         // Data on /opt/drupal/web, which means web folder on /opt/drupal/web/web
         $tasks = [];
+        $tasks[] = $this->taskExec('docker-compose exec -T php pwd');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ls /opt/drupal');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ls /opt/drupal/web');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ls /opt/drupal/web/web');
         $tasks[] = $this->taskExec('docker-compose exec -T php rm -rf ' . static::BASE_PATH);
-        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data /opt/drupal/web');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf /opt/drupal/web/web ' . static::BASE_PATH);
+        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data /opt/drupal');
+        $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf /opt/drupal/web ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php service apache2 start');
         return $tasks;
     }
