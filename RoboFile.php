@@ -80,8 +80,8 @@ class RoboFile extends \Robo\Tasks
         $collection = $this->collectionBuilder();
         $collection->addTaskList($this->buildEnvironment());
         $collection->addTaskList($this->serveDrupal());
-        $collection->addTaskList($this->importDatabase());
         $collection->addTask($this->waitForDrupal());
+        $collection->addTaskList($this->importDatabase());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runBehatTests());
         return $collection->run();
@@ -98,8 +98,8 @@ class RoboFile extends \Robo\Tasks
         $collection = $this->collectionBuilder();
         $collection->addTaskList($this->buildEnvironment());
         $collection->addTaskList($this->serveDrupal());
-        $collection->addTaskList($this->importDatabase());
         $collection->addTask($this->waitForDrupal());
+        $collection->addTaskList($this->importDatabase());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runCypressTests());
         return $collection->run();
@@ -138,6 +138,7 @@ class RoboFile extends \Robo\Tasks
      */
     protected function waitForDrupal()
     {
+        return $this->taskExec('sleep 2s');
         return $this->taskExec('sleep 30s');
     }
 
@@ -153,9 +154,9 @@ class RoboFile extends \Robo\Tasks
     protected function runUpdatePath()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush --yes updatedb');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush --yes config-import');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush cr');
+        // $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush --yes updatedb');
+        // $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush --yes config-import');
+        // $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush cr');
         return $tasks;
     }
 
@@ -170,7 +171,7 @@ class RoboFile extends \Robo\Tasks
         $tasks = [];
         $tasks[] = $this->taskExec('docker-compose exec -T php rm -rf ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php mkdir -p ' . dirname(static::BASE_PATH));
-        $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . static::MOUNT_PATH);
+        //$tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . static::MOUNT_PATH . '/web');
         $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf ' . static::MOUNT_PATH . '/web ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php service apache2 start');
         return $tasks;
@@ -190,8 +191,9 @@ class RoboFile extends \Robo\Tasks
     protected function importDatabase()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('mysql -u root -h mariadb -e "create database drupal"');
-        $tasks[] = $this->taskExec('wget -O dump.sql "' . getenv('DB_DUMP_URL') . '"');
+        putenv('DB_DUMP_URL=https://raw.githubusercontent.com/fjgarlin/d9-lagoon/9.x/assets/d9-lagoon-dump.sql');
+        $tasks[] = $this->taskExec('docker-compose exec -T php mysql -u root -h mariadb -e "create database if not exists drupal"');
+        $tasks[] = $this->taskExec('docker-compose exec -T php wget -O dump.sql "' . getenv('DB_DUMP_URL') . '"');
         $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/vendor/bin/drush sql-cli < dump.sql');
         return $tasks;
     }
@@ -253,8 +255,8 @@ class RoboFile extends \Robo\Tasks
     protected function runCypressTests()
     {
         $tasks = [];
-        $tasks[] = $this->taskExec('docker-compose exec -T php npm --prefix ' . static::MOUNT_PATH . ' install cypress --save-dev');
-        $tasks[] = $this->taskExec('docker-compose exec -T php ' . static::MOUNT_PATH . '/node_modules/.bin/cypress run');
+        $tasks[] = $this->taskExec('docker-compose exec --user root -T php npm --prefix ' . static::MOUNT_PATH . ' install cypress --save-dev');
+        $tasks[] = $this->taskExec('docker-compose exec --user root -T php ' . static::MOUNT_PATH . '/node_modules/.bin/cypress run');
         return $tasks;
     }
 

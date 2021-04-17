@@ -7,6 +7,6 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
 
   php:
-    image: juampynr/drupal8ci:latest
+    image: juampynr/drupal9ci:latest
     volumes:
       - ./:/opt/drupal/web

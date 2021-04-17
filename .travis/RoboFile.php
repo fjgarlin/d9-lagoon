@@ -81,7 +81,7 @@ class RoboFile extends \Robo\Tasks
         $collection->addTaskList($this->buildEnvironment());
         $collection->addTaskList($this->serveDrupal());
         $collection->addTaskList($this->importDatabase());
-        $collection->addTask($this->waitForDrupal());
+        $collection->addTaskList($this->waitForDrupal());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runBehatTests());
         return $collection->run();
@@ -99,7 +99,7 @@ class RoboFile extends \Robo\Tasks
         $collection->addTaskList($this->buildEnvironment());
         $collection->addTaskList($this->serveDrupal());
         $collection->addTaskList($this->importDatabase());
-        $collection->addTask($this->waitForDrupal());
+        $collection->addTaskList($this->waitForDrupal());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runCypressTests());
         return $collection->run();
@@ -168,6 +168,7 @@ class RoboFile extends \Robo\Tasks
     protected function serveDrupal()
     {
         $tasks = [];
+        $tasks[] = $this->taskExec('docker-compose exec -T php ls ' . static::MOUNT_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php rm -rf ' . static::BASE_PATH);
         $tasks[] = $this->taskExec('docker-compose exec -T php mkdir -p ' . dirname(static::BASE_PATH));
         $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . static::MOUNT_PATH);
