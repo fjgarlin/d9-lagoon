@@ -175,6 +175,8 @@ class RoboFile extends \Robo\Tasks
     {
         // Data on /opt/drupal/web, which means web folder on /opt/drupal/web/web
         $tasks = [];
+        $tasks[] = $this->taskExec('docker-compose exec -T php ls /var/www/html');
+        $tasks[] = $this->taskExec('docker-compose exec -T php rm -rf /var/www/html');
         $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data /opt/drupal/web');
         $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf /opt/drupal/web/web /var/www/html');
         $tasks[] = $this->taskExec('docker-compose exec -T php service apache2 start');

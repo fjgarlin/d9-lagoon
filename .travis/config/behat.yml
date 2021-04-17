@@ -16,7 +16,6 @@ default:
       drush:
         alias: 'local'
       drupal:
-        # Value of getenv('TRAVIS_BUILD_DIR') + /web
         drupal_root: '/var/www/html/web'
       region_map:
         footer: "#footer"
