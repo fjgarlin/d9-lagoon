@@ -167,22 +167,6 @@ class RoboFile extends \Robo\Tasks
     }
 
     /**
-     * Runs composer commands.
-     *
-     * @return \Robo\Task\Base\Exec[]
-     *   An array of tasks.
-     */
-    protected function runComposer() {
-        $tasks = [];
-        // $tasks[] = $this->taskComposerValidate()->noCheckPublish();
-        // $tasks[] = $this->taskComposerInstall()
-        //     ->noInteraction()
-        //     ->envVars(['COMPOSER_ALLOW_SUPERUSER' => 1, 'COMPOSER_DISCARD_CHANGES' => 1] + getenv())
-        //     ->optimizeAutoloader();
-        return $tasks;
-    }
-
-    /**
      * Serves Drupal.
      *
      * @return \Robo\Task\Base\Exec[]
@@ -190,6 +174,7 @@ class RoboFile extends \Robo\Tasks
      */
     protected function runServeDrupal()
     {
+        // Data on /opt/drupal/web, which means web folder on /opt/drupal/web/web
         $tasks = [];
         $tasks[] = $this->taskExec('docker-compose exec -T php chown -R www-data:www-data ' . getenv('TRAVIS_BUILD_DIR'));
         $tasks[] = $this->taskExec('docker-compose exec -T php ln -sf ' . getenv('TRAVIS_BUILD_DIR') . '/web/web /var/www/html');
