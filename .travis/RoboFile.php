@@ -118,8 +118,6 @@ class RoboFile extends \Robo\Tasks
         $tasks[] = $this->taskFilesystemStack()
             ->copy('.travis/docker-compose.yml', 'docker-compose.yml', $force)
             ->copy('.travis/php-node.dockerfile', 'php-node.dockerfile', $force)
-            ->copy('.travis/traefik.yml', 'traefik.yml', $force)
-            ->copy('.travis/.env', '.env', $force)
             ->copy('.travis/config/settings.local.php', 'web/sites/default/settings.local.php', $force)
             ->copy('.travis/config/behat.yml', 'tests/behat.yml', $force)
             ->copy('.cypress/cypress.json', 'cypress.json', $force)
@@ -183,8 +181,6 @@ class RoboFile extends \Robo\Tasks
         $tasks[] = $this->taskDockerComposeExec('mkdir -p ' . dirname(static::APACHE_PATH));
         $tasks[] = $this->taskDockerComposeExec('chown -R www-data:www-data ' . static::MOUNT_PATH);
         $tasks[] = $this->taskDockerComposeExec('ln -sf ' . static::MOUNT_PATH . '/web ' . static::APACHE_PATH);
-        // $tasks[] = $this->taskDockerComposeExec('chmod -R 777 ' . static::MOUNT_PATH);
-        // $tasks[] = $this->taskDockerComposeExec('chown -h www-data:www-data ' . static::APACHE_PATH);
         $tasks[] = $this->taskDockerComposeExec('service apache2 start');
         return $tasks;
     }
