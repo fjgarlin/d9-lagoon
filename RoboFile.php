@@ -135,7 +135,7 @@ class RoboFile extends \Robo\Tasks {
       ->copy('.bitbucket/config/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
       ->dir('web')
-      ->exec('../vendor/bin/phpunit -c core --debug --coverage-clover ../build/logs/clover.xml --verbose modules/custom');
+      ->exec('XDEBUG_MODE=coverage ../vendor/bin/phpunit -c core --debug --coverage-clover ../build/logs/clover.xml --verbose modules/custom');
     return $tasks;
   }
 
@@ -152,7 +152,7 @@ class RoboFile extends \Robo\Tasks {
       ->copy('.bitbucket/config/phpunit.xml', 'web/core/phpunit.xml', $force);
     $tasks[] = $this->taskExecStack()
       ->dir('web')
-      ->exec('../vendor/bin/phpunit -c core --debug --verbose --coverage-html ../coverage modules/custom');
+      ->exec('XDEBUG_MODE=coverage ../vendor/bin/phpunit -c core --debug --verbose --coverage-html ../coverage modules/custom');
     return $tasks;
   }
 

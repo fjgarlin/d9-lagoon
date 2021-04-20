@@ -1,6 +1,4 @@
 image: juampynr/drupal8ci:latest
-variables:
-  XDEBUG_MODE: coverage
 pipelines:
   default:
     - parallel:
@@ -14,7 +12,6 @@ pipelines:
             services:
               - mariadb
             script:
-              # - sleep 30 # Wait for DB service to start.
               - robo job:build
               - vendor/bin/robo job:unit-tests
         # - step:
@@ -22,7 +19,6 @@ pipelines:
         #     services:
         #       - mariadb
         #     script:
-        #       # - sleep 30 # Wait for DB service to start.
         #       - robo job:build
         #       - vendor/bin/robo job:coverage-report
 
