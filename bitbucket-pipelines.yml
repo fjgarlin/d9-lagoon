@@ -3,11 +3,11 @@ image: juampynr/drupal8ci:latest
 pipelines:
   default:
     - parallel:
-        - step:
-            # name: Coding Standards
-            # script:
-            #   - robo job:build
-            #   - vendor/bin/robo job:coding-standards
+        # - step:
+        #     name: Coding Standards
+        #     script:
+        #       - robo job:build
+        #       - vendor/bin/robo job:coding-standards
         - step:
             name: Unit test
             services:
