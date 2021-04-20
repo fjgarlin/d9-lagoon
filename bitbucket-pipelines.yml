@@ -12,6 +12,7 @@ pipelines:
         #     services:
         #       - mariadb
         #     script:
+        #       - sleep 10
         #       - robo job:build
         #       - vendor/bin/robo job:unit-tests
         - step:
@@ -19,6 +20,7 @@ pipelines:
             services:
               - mariadb
             script:
+              - sleep 10
               - robo job:build
               - vendor/bin/robo job:coverage-report
 
