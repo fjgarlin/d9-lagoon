@@ -6,24 +6,26 @@ pipelines:
         - step:
             name: Coding Standards
             script:
-              - composer install
-              - vendor/bin/robo job:build
+              - robo job:build
               - vendor/bin/robo job:coding-standards
-            caches:
-              - composer
         - step:
             name: Unit test
+            services:
+              - mariadb
             script:
-              - composer install
-              - vendor/bin/robo job:build
+              - robo job:build
               - vendor/bin/robo job:unit-tests
-            caches:
-              - composer
         - step:
             name: Code coverage
+            services:
+              - mariadb
             script:
-              - composer install
-              - vendor/bin/robo job:build
+              - robo job:build
               - vendor/bin/robo job:coverage-report
-            caches:
-              - composer
+
+definitions:
+  services:
+    mariadb:
+      image: mariadb:latest
+      variables:
+        MYSQL_ROOT_PASSWORD: root
