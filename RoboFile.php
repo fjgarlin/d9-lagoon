@@ -1,307 +1,298 @@
 <?php
 // @codingStandardsIgnoreStart
+use Robo\Exception\TaskException;
 
 /**
  * Base tasks for setting up a module to test within a full Drupal environment.
  *
+ * This file expects to be called from the root of a Drupal site.
+ *
  * @class RoboFile
  * @codeCoverageIgnore
  */
-class RoboFile extends \Robo\Tasks {
+class RoboFile extends \Robo\Tasks
+{
 
-  /**
-   * Command to build the environment
-   *
-   * @return \Robo\Result
-   *   The result of the collection of tasks.
-   */
-  public function jobBuild() {
-    $collection = $this->collectionBuilder();
-    $collection->addTaskList($this->copyConfigurationFiles());
-    $collection->addTaskList($this->runComposer());
-    return $collection->run();
-  }
+    /**
+     * The database URL.
+     */
+    const DB_URL = 'sqlite://tmp/site.sqlite';
 
-  /**
-   * Command to run unit tests.
-   *
-   * @return \Robo\Result
-   *   The result of the collection of tasks.
-   */
-  public function jobUnitTests() {
-    $collection = $this->collectionBuilder();
-    $collection->addTask($this->installDrupal());
-    $collection->addTaskList($this->runUnitTests());
-    return $collection->run();
-  }
+    /**
+     * Base path where the web files will be.
+     */
+    const APACHE_PATH = '/var/html/www';
 
-  /**
-   * Command to generate a coverage report.
-   *
-   * @return \Robo\Result
-   *   The result of the collection of tasks.
-   */
-  public function jobCoverageReport() {
-    $collection = $this->collectionBuilder();
-    $collection->addTask($this->installDrupal());
-    $collection->addTaskList($this->runCoverageReport());
-    return $collection->run();
-  }
+    /**
+     * Mount path where the web files will be.
+     */
+    const MOUNT_PATH = '/opt/drupal';
 
-  /**
-   * Command to check for Drupal's Coding Standards.
-   *
-   * @return \Robo\Result
-   *   The result of the collection of tasks.
-   */
-  public function jobCodingStandards() {
-    $collection = $this->collectionBuilder();
-    $collection->addTaskList($this->runCodeSniffer());
-    return $collection->run();
-  }
+    /**
+     * RoboFile constructor.
+     */
+    public function __construct()
+    {
+        // Treat this command like bash -e and exit as soon as there's a failure.
+        $this->stopOnFail();
+    }
 
-  /**
-   * Command to run behat tests.
-   *
-   * @return \Robo\Result
-   *   The result tof the collection of tasks.
-   */
-  public function jobBehatTests()
-  {
-    $collection = $this->collectionBuilder();
-    $collection->addTaskList($this->runBehatTests());
-    return $collection->run();
-  }
+    /**
+     * Command to run unit tests.
+     *
+     * @return \Robo\Result
+     *   The result of the collection of tasks.
+     */
+    public function jobRunUnitTests()
+    {
+        $collection = $this->collectionBuilder();
+        $collection->addTask($this->installDrupal());
+        $collection->addTaskList($this->runUnitTests());
+        return $collection->run();
+    }
 
-  /**
-   * Command to run Cypress tests.
-   *
-   * @return \Robo\Result
-   *   The result tof the collection of tasks.
-   */
-  public function jobCypressTests()
-  {
-    $collection = $this->collectionBuilder();
-    $collection->addTaskList($this->runCypressTests());
-    return $collection->run();
-  }
+    /**
+     * Command to check coding standards.
+     *
+     * @return null|\Robo\Result
+     *   The result of the set of tasks.
+     *
+     * @throws \Robo\Exception\TaskException
+     */
+    public function jobCheckCodingStandards()
+    {
+        return $this->taskExecStack()
+            ->stopOnFail()
+            ->exec('vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer')
+            ->exec('vendor/bin/phpcs --standard=Drupal web/modules/custom')
+            ->exec('vendor/bin/phpcs --standard=DrupalPractice web/modules/custom')
+            ->run();
+    }
 
-  /**
-   * Serve Drupal.
-   *
-   * @return \Robo\Result
-   *   The result tof the collection of tasks.
-   */
-  public function jobServeDrupal()
-  {
-    $collection = $this->collectionBuilder();
-    $collection->addTaskList($this->importDatabase());
-    $collection->addTaskList($this->runUpdateDatabase());
-    $collection->addTaskList($this->runServeDrupal());
-    return $collection->run();
-  }
+    /**
+     * Command to run behat tests.
+     *
+     * @return \Robo\Result
+     *   The resul tof the collection of tasks.
+     */
+    public function jobRunBehatTests()
+    {
+        $collection = $this->collectionBuilder();
+        $collection->addTaskList($this->buildEnvironment());
+        $collection->addTaskList($this->serveDrupal());
+        $collection->addTask($this->waitForDrupal());
+        $collection->addTaskList($this->importDatabase());
+        $collection->addTaskList($this->runUpdatePath());
+        $collection->addTaskList($this->runBehatTests());
+        return $collection->run();
+    }
 
-  /**
-   * Updates the database.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function runUpdateDatabase() {
-    $tasks = [];
-    $tasks[] = $this->drush()
-      ->args('updatedb')
-      ->option('yes')
-      ->option('verbose');
-    $tasks[] = $this->drush()
-      ->args('config:import')
-      ->option('yes')
-      ->option('verbose');
-    $tasks[] = $this->drush()->args('cache:rebuild')->option('verbose');
-    $tasks[] = $this->drush()->args('st');
-    return $tasks;
-  }
+    /**
+     * Command to run Cypress tests.
+     *
+     * @return \Robo\Result
+     *   The result tof the collection of tasks.
+     */
+    public function jobRunCypressTests()
+    {
+        $collection = $this->collectionBuilder();
+        $collection->addTaskList($this->buildEnvironment());
+        $collection->addTaskList($this->serveDrupal());
+        $collection->addTask($this->waitForDrupal());
+        $collection->addTaskList($this->importDatabase());
+        $collection->addTaskList($this->runUpdatePath());
+        $collection->addTaskList($this->runCypressTests());
+        return $collection->run();
+    }
 
-  /**
-   * Run unit tests.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function runUnitTests() {
-    $force = TRUE;
-    $tasks = [];
-    $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
-    $tasks[] = $this->taskExecStack()
-      ->dir('web')
-      ->exec('../vendor/bin/phpunit -c core --debug --coverage-clover ../build/logs/clover.xml --verbose modules/custom');
-    return $tasks;
-  }
+    /**
+     * Builds the Docker environment.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function buildEnvironment()
+    {
+        $force = TRUE;
+        $tasks = [];
+        $tasks[] = $this->taskFilesystemStack()
+            ->copy('.travis/docker-compose.yml', 'docker-compose.yml', $force)
+            ->copy('.travis/php-node.dockerfile', 'php-node.dockerfile', $force)
+            ->copy('.travis/traefik.yml', 'traefik.yml', $force)
+            ->copy('.travis/.env', '.env', $force)
+            ->copy('.travis/config/settings.local.php', 'web/sites/default/settings.local.php', $force)
+            ->copy('.travis/config/behat.yml', 'tests/behat.yml', $force)
+            ->copy('.cypress/cypress.json', 'cypress.json', $force)
+            ->copy('.cypress/package.json', 'package.json', $force);
+        $tasks[] = $this->taskExec('docker-compose pull');
+        $tasks[] = $this->taskExec('docker-compose up -d');
+        return $tasks;
+    }
 
-  /**
-   * Generates a code coverage report.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function runCoverageReport() {
-    $force = TRUE;
-    $tasks = [];
-    $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/phpunit.xml', 'web/core/phpunit.xml', $force);
-    $tasks[] = $this->taskExecStack()
-      ->dir('web')
-      ->exec('../vendor/bin/phpunit -c core --debug --verbose --coverage-html ../coverage modules/custom');
-    return $tasks;
-  }
+    /**
+     * Waits for Drupal to accept requests.
+     *
+     * @TODO Find an efficient way to wait for Drupal.
+     *
+     * @return \Robo\Task\Base\Exec
+     *   A task to check that Drupal is ready.
+     */
+    protected function waitForDrupal()
+    {
+        return $this->taskExec('sleep 30s');
+    }
 
-  /**
-   * Sets up and runs code sniffer.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function runCodeSniffer() {
-    $tasks = [];
-    $tasks[] = $this->taskExecStack()
-      ->exec('vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer');
-    $tasks[] = $this->taskFilesystemStack()
-      ->mkdir('artifacts/phpcs');
-    $tasks[] = $this->taskExecStack()
-      ->exec('vendor/bin/phpcs --standard=Drupal --report=junit --report-junit=artifacts/phpcs/phpcs.xml web/modules/custom')
-      ->exec('vendor/bin/phpcs --standard=DrupalPractice --report=junit --report-junit=artifacts/phpcs/phpcs.xml web/modules/custom');
-    return $tasks;
-  }
+    /**
+     * Updates the database.
+     *
+     * We can't use the drush() method because this is running within a docker-compose
+     * environment.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function runUpdatePath()
+    {
+        $tasks = [];
+        $tasks[] = $this->taskDockerComposeExec('vendor/bin/drush --yes updatedb');
+        $tasks[] = $this->taskDockerComposeExec('vendor/bin/drush --yes config-import');
+        $tasks[] = $this->taskDockerComposeExec('vendor/bin/drush cr');
+        return $tasks;
+    }
 
-  /**
-   * Serves Drupal.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  function runServeDrupal()
-  {
-    $tasks = [];
-    $tasks[] = $this->taskExec('chown -R www-data:www-data ' . getenv('GITHUB_WORKSPACE'));
-    $tasks[] = $this->taskExec('ln -sf ' . getenv('GITHUB_WORKSPACE') . '/web /var/www/html');
-    $tasks[] = $this->taskExec('service apache2 start');
-    return $tasks;
-  }
+    /**
+     * Run docker-compose task on php container.
+     */
+    protected function taskDockerComposeExec($command, $mount_path = TRUE) {
+        $command = ($mount_path) ?
+            "cd " . static::MOUNT_PATH . " && {$command}" :
+            $command;
+        return $this->taskExec("docker-compose exec -T php bash -c '{$command}'");
+    }
 
-  /**
-   * Runs Behat tests.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function runBehatTests()
-  {
-    $force = TRUE;
-    $tasks = [];
-    $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/behat.yml', 'tests/behat.yml', $force);
-    $tasks[] = $this->taskExec('sleep 30s');
-    $tasks[] = $this->taskExec('vendor/bin/behat --verbose -c tests/behat.yml');
-    return $tasks;
-  }
+    /**
+     * Serves Drupal.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function serveDrupal()
+    {
+        $tasks = [];
+        $tasks[] = $this->taskDockerComposeExec('rm -rf ' . static::APACHE_PATH);
+        $tasks[] = $this->taskDockerComposeExec('mkdir -p ' . dirname(static::APACHE_PATH));
+        $tasks[] = $this->taskDockerComposeExec('chown -R www-data:www-data ' . static::MOUNT_PATH);
+        $tasks[] = $this->taskDockerComposeExec('ln -sf ' . static::MOUNT_PATH . '/web ' . static::APACHE_PATH);
+        // $tasks[] = $this->taskDockerComposeExec('chown -h www-data:www-data ' . static::APACHE_PATH);
+        $tasks[] = $this->taskDockerComposeExec('service apache2 start');
+        return $tasks;
+    }
 
-  /**
-   * Runs Cypress tests.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function runCypressTests()
-  {
-    $force = TRUE;
-    $tasks = [];
-    $tasks[] = $this->taskFilesystemStack()
-      ->copy('.cypress/cypress.json', 'cypress.json', $force)
-      ->copy('.cypress/package.json', 'package.json', $force);
-    $tasks[] = $this->taskExec('sleep 30s');
-    $tasks[] = $this->taskExec('npm install cypress --save-dev');
-    $tasks[] = $this->taskExec('$(npm bin)/cypress run');
-    return $tasks;
-  }
+    /**
+     * Imports and updates the database.
+     *
+     * This task assumes that there is an environment variable $DB_DUMP_URL
+     * that contains a URL to a database dump. Ideally, you should set up drush
+     * site aliases and then replace this task by a drush sql-sync one. See the
+     * README at lullabot/drupal9ci for further details.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function importDatabase()
+    {
+        $tasks = [];
+        putenv('DB_DUMP_URL="https://raw.githubusercontent.com/fjgarlin/d9-lagoon/9.x/assets/d9-lagoon-dump.sql"');
+        $tasks[] = $this->taskDockerComposeExec('mysql -u root -h mariadb -e "create database if not exists drupal"');
+        $tasks[] = $this->taskDockerComposeExec('wget -O /tmp/dump.sql "' . getenv('DB_DUMP_URL') . '"');
+        $tasks[] = $this->taskDockerComposeExec('vendor/bin/drush sql-cli < /tmp/dump.sql');
+        return $tasks;
+    }
 
-  /**
-   * Return drush with default arguments.
-   *
-   * @return \Robo\Task\Base\Exec
-   *   A drush exec command.
-   */
-  protected function drush() {
-    return $this->taskExec('vendor/bin/drush');
-  }
+    /**
+     * Install Drupal.
+     *
+     * @return \Robo\Task\Base\Exec
+     *   A task to install Drupal.
+     */
+    protected function installDrupal()
+    {
+        $task = $this->drush()
+            ->args('site-install')
+            ->option('verbose')
+            ->option('yes')
+            ->option('db-url', static::DB_URL, '=');
+        return $task;
+    }
 
-  /**
-   * Copies configuration files.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function copyConfigurationFiles() {
-    $force = TRUE;
-    $tasks = [];
-    $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/settings.local.php', 'web/sites/default/settings.local.php', $force)
-      ->copy('.github/config/.env', '.env', $force);
-    return $tasks;
-  }
+    /**
+     * Run unit tests.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function runUnitTests()
+    {
+        $force = TRUE;
+        $tasks = [];
+        $tasks[] = $this->taskFilesystemStack()
+            ->copy('.travis/config/phpunit.xml', 'web/core/phpunit.xml', $force);
+        $tasks[] = $this->taskExecStack()
+            ->dir('web')
+            ->exec('../vendor/bin/phpunit -c core --debug --coverage-clover ../build/logs/clover.xml --verbose modules/custom');
+        return $tasks;
+    }
 
-  /**
-   * Runs composer commands.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function runComposer() {
-    $tasks = [];
-    $tasks[] = $this->taskComposerValidate()->noCheckPublish();
-    $tasks[] = $this->taskComposerInstall()
-      ->noInteraction()
-      ->envVars(['COMPOSER_ALLOW_SUPERUSER' => 1, 'COMPOSER_DISCARD_CHANGES' => 1] + getenv())
-      ->optimizeAutoloader();
-    return $tasks;
-  }
+    /**
+     * Runs Behat tests.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function runBehatTests()
+    {
+        $tasks = [];
+        $tasks[] = $this->taskDockerComposeExec('vendor/bin/behat --verbose -c tests/behat.yml');
+        return $tasks;
+    }
 
-  /**
-   * Install Drupal.
-   *
-   * @return \Robo\Task\Base\Exec
-   *   A task to install Drupal.
-   */
-  protected function installDrupal()
-  {
-    $task = $this->drush()
-      ->args('site-install')
-      ->option('verbose')
-      ->option('yes');
-    return $task;
-  }
+    /**
+     * Runs Cypress tests.
+     *
+     * @return \Robo\Task\Base\Exec[]
+     *   An array of tasks.
+     */
+    protected function runCypressTests()
+    {
+        $tasks = [];
+        $tasks[] = $this->taskDockerComposeExec('npm install cypress --save-dev --unsafe-perm');
+        $tasks[] = $this->taskDockerComposeExec('$(npm bin)/cypress run');
+        return $tasks;
+    }
 
-  /**
-   * Imports and updates the database.
-   *
-   * This task assumes that there is an environment variable $DB_DUMP_URL
-   * that contains a URL to a database dump. Ideally, you should set up drush
-   * site aliases and then replace this task by a drush sql-sync one. See the
-   * README at lullabot/drupal9ci for further details.
-   *
-   * @return \Robo\Task\Base\Exec[]
-   *   An array of tasks.
-   */
-  protected function importDatabase()
-  {
-    $force = TRUE;
-    $tasks = [];
-    $tasks[] = $this->taskExec('mysql -u root -proot -h mariadb -e "create database drupal"');
-    $tasks[] = $this->taskFilesystemStack()
-      ->copy('.github/config/settings.local.php', 'web/sites/default/settings.local.php', $force);
-    $tasks[] = $this->taskExec('wget -O dump.sql "' . getenv('DB_DUMP_URL') . '"');
-    $tasks[] = $this->drush()->rawArg('sql-cli < dump.sql');
-    return $tasks;
-  }
+    /**
+     * Return drush with default arguments.
+     *
+     * @return \Robo\Task\Base\Exec
+     *   A drush exec command.
+     */
+    protected function drush()
+    {
+        // Drush needs an absolute path to the docroot.
+        $docroot = $this->getDocroot() . '/web';
+        return $this->taskExec('vendor/bin/drush')
+            ->option('root', $docroot, '=');
+    }
+
+    /**
+     * Get the absolute path to the docroot.
+     *
+     * @return string
+     *   The document root.
+     */
+    protected function getDocroot()
+    {
+        return (getcwd());
+    }
 
 }
