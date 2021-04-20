@@ -12,6 +12,8 @@ pipelines:
             name: Unit test
             services:
               - mariadb
+            variables:
+              XDEBUG_MODE: coverage
             script:
               - sleep 30 # Wait for DB service to start.
               - robo job:build
@@ -20,6 +22,8 @@ pipelines:
             name: Code coverage
             services:
               - mariadb
+            variables:
+              XDEBUG_MODE: coverage
             script:
               - sleep 30 # Wait for DB service to start.
               - robo job:build
