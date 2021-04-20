@@ -4,15 +4,16 @@ pipelines:
   default:
     - parallel:
         - step:
-            name: Coding Standards
-            script:
-              - robo job:build
-              - vendor/bin/robo job:coding-standards
+            # name: Coding Standards
+            # script:
+            #   - robo job:build
+            #   - vendor/bin/robo job:coding-standards
         - step:
             name: Unit test
             services:
               - mariadb
             script:
+              - sleep 30 # Wait for DB service to start.
               - robo job:build
               - vendor/bin/robo job:unit-tests
         - step:
@@ -20,6 +21,7 @@ pipelines:
             services:
               - mariadb
             script:
+              - sleep 30 # Wait for DB service to start.
               - robo job:build
               - vendor/bin/robo job:coverage-report
 
