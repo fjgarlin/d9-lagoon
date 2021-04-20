@@ -1,19 +1,29 @@
-image: composer:1.0
+image: juampynr/drupal8ci:latest
 
 pipelines:
   default:
     - parallel:
         - step:
-            name: Test
+            name: Coding Standards
             script:
               - composer install
-              -  ./vendor/bin/phpunit test
+              - vendor/bin/robo job:build
+              - vendor/bin/robo job:coding-standards
             caches:
               - composer
         - step:
-            name: Lint
+            name: Unit test
             script:
               - composer install
-              - ./vendor/bin/phplint . --exclude=vendor
+              - vendor/bin/robo job:build
+              - vendor/bin/robo job:unit-tests
+            caches:
+              - composer
+        - step:
+            name: Code coverage
+            script:
+              - composer install
+              - vendor/bin/robo job:build
+              - vendor/bin/robo job:coverage-report
             caches:
               - composer
