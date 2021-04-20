@@ -7,20 +7,20 @@ pipelines:
         #     script:
         #       - robo job:build
         #       - vendor/bin/robo job:coding-standards
-        - step:
-            name: Unit test
-            services:
-              - mariadb
-            script:
-              - robo job:build
-              - vendor/bin/robo job:unit-tests
         # - step:
-        #     name: Code coverage
+        #     name: Unit test
         #     services:
         #       - mariadb
         #     script:
         #       - robo job:build
-        #       - vendor/bin/robo job:coverage-report
+        #       - vendor/bin/robo job:unit-tests
+        - step:
+            name: Code coverage
+            services:
+              - mariadb
+            script:
+              - robo job:build
+              - vendor/bin/robo job:coverage-report
 
 definitions:
   services:
