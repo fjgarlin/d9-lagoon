@@ -16,7 +16,7 @@ default:
       drush:
         alias: 'local'
       drupal:
-        drupal_root: '/__w/d9-lagoon/d9-lagoon/web'
+        drupal_root: '/opt/atlassian/pipelines/agent/build/web'
       region_map:
         footer: "#footer"
       selectors:
