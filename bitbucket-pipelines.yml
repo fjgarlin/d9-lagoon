@@ -28,12 +28,16 @@ pipelines:
             services:
               - mariadb
             script:
+              - echo $DB_DUMP_URL
               - sleep 10
               - robo job:build
               - vendor/bin/robo job:serve-drupal
               - vendor/bin/robo job:behat-tests
             variables:
-              DB_DUMP_URL: "https://raw.githubusercontent.com/fjgarlin/d9-lagoon/9.x/assets/d9-lagoon-dump.sql"
+              # NOTE: environment variables doesn't work on Bitbucket via the config file.
+              # Navigate to "Repository settings > Pipelines > Repository variables"
+              # and add DB_DUMP_URL to the URL of your DB dump.
+              FOO: bar
 
 definitions:
   services:
