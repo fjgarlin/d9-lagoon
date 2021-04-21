@@ -15,14 +15,25 @@ pipelines:
         #       - sleep 10
         #       - robo job:build
         #       - vendor/bin/robo job:unit-tests
+        # - step:
+        #     name: Code coverage
+        #     services:
+        #       - mariadb
+        #     script:
+        #       - sleep 10
+        #       - robo job:build
+        #       - vendor/bin/robo job:coverage-report
         - step:
-            name: Code coverage
+            name: Behat
             services:
               - mariadb
             script:
               - sleep 10
               - robo job:build
-              - vendor/bin/robo job:coverage-report
+              - vendor/bin/robo job:serve-drupal
+              - vendor/bin/robo job:behat-tests
+            variables:
+              DB_DUMP_URL: "https://raw.githubusercontent.com/fjgarlin/d9-lagoon/9.x/assets/d9-lagoon-dump.sql"
 
 definitions:
   services:
