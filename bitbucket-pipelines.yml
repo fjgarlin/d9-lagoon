@@ -2,42 +2,42 @@ image: juampynr/drupal8ci:latest
 pipelines:
   default:
     - parallel:
-        # - step:
-        #     name: Coding Standards
-        #     script:
-        #       - robo job:build
-        #       - vendor/bin/robo job:coding-standards
-        # - step:
-        #     name: Unit test
-        #     services:
-        #       - mariadb
-        #     script:
-        #       - sleep 10
-        #       - robo job:build
-        #       - vendor/bin/robo job:unit-tests
-        # - step:
-        #     name: Code coverage
-        #     services:
-        #       - mariadb
-        #     script:
-        #       - sleep 10
-        #       - robo job:build
-        #       - vendor/bin/robo job:coverage-report
-        # - step:
-        #     name: Behat
-        #     services:
-        #       - mariadb
-        #     script:
-        #       - echo $DB_DUMP_URL
-        #       - sleep 10
-        #       - robo job:build
-        #       - vendor/bin/robo job:serve-drupal
-        #       - vendor/bin/robo job:behat-tests
-        #     variables:
-        #       # NOTE: environment variables doesn't work on Bitbucket via the config file.
-        #       # Navigate to "Repository settings > Pipelines > Repository variables"
-        #       # and add DB_DUMP_URL to the URL of your DB dump.
-        #       FOO: bar
+        - step:
+            name: Coding Standards
+            script:
+              - robo job:build
+              - vendor/bin/robo job:coding-standards
+        - step:
+            name: Unit test
+            services:
+              - mariadb
+            script:
+              - sleep 10
+              - robo job:build
+              - vendor/bin/robo job:unit-tests
+        - step:
+            name: Code coverage
+            services:
+              - mariadb
+            script:
+              - sleep 10
+              - robo job:build
+              - vendor/bin/robo job:coverage-report
+        - step:
+            name: Behat
+            services:
+              - mariadb
+            script:
+              - echo $DB_DUMP_URL
+              - sleep 10
+              - robo job:build
+              - vendor/bin/robo job:serve-drupal
+              - vendor/bin/robo job:behat-tests
+            variables:
+              # NOTE: environment variables doesn't work on Bitbucket via the config file.
+              # Navigate to "Repository settings > Pipelines > Repository variables"
+              # and add DB_DUMP_URL to the URL of your DB dump.
+              FOO: bar
         - step:
             name: CypressIO
             services:
