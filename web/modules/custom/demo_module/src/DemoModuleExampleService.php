@@ -37,6 +37,7 @@ class DemoModuleExampleService {
       ->sort('created', 'DESC')
       ->range(0, 1)
       ->execute();
+    // Additional comment.
     $nid = reset($nids);
     return $nid ? $this->nodeStorage->load($nid) : FALSE;
   }
