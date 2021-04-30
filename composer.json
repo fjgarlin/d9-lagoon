@@ -29,7 +29,8 @@
     "require-dev": {
         "drupal/core-dev": "^9.1",
         "drupal/core-dev-pinned": "9.1.5",
-        "drupal/drupal-extension": "^4.1"
+        "drupal/drupal-extension": "^4.1",
+        "drupol/drupal-conventions": "^1.7"
     },
     "conflict": {
         "drupal/drupal": "*"
