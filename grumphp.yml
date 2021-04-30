@@ -1,4 +1,7 @@
 parameters:
+  ascii:
+    failed: .grump/ascii.txt
+    succeeded: .grump/ascii.txt
   git_dir: .
   bin_dir: vendor/bin
   tasks:
